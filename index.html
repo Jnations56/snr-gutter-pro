@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SNR Gutter Pro</title>
+<style>
+:root{--navy:#132238;--blue:#1f6feb;--bg:#f3f6fa;--line:#d8e0ea;--red:#df1b1b;--green:#16803c;--muted:#667085}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:#172033}
+header{background:var(--navy);color:#fff;text-align:center;padding:18px}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:13px;opacity:.85}
+main{max-width:1100px;margin:auto;padding:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.05)}
+.title{padding:13px 15px;font-size:17px;font-weight:850;background:#fbfcfe;border-bottom:1px solid var(--line)}.body{padding:13px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid4{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;align-items:center}
+label{display:block;font-size:12px;font-weight:750;color:#344054;margin-bottom:5px}input,textarea,select{width:100%;padding:10px;border:1px solid #cfd8e3;border-radius:9px;font:inherit}
+button,.upload{border:0;border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.primary{background:var(--blue);color:#fff}.dark{background:var(--navy);color:#fff}.secondary{background:#e8eef7;color:#1c2b42}.danger{background:#fde8e2;color:#9c2a10}.success{background:#dcfce7;color:#116329}
+#photoInput{display:none}.toolbar,.actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.photo-tabs{display:flex;gap:7px;overflow:auto;padding-bottom:8px}.photo-tab{white-space:nowrap;background:#eef3f9;color:#23324a}.photo-tab.active{background:var(--navy);color:white}
+.canvas-shell{position:relative;width:100%;min-height:270px;background:#e9eef5;border:2px dashed #aab7c7;border-radius:12px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:auto;min-height:270px;touch-action:none}.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;color:var(--muted);font-weight:700;pointer-events:none}
+.measurements{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.mrow{display:grid;grid-template-columns:1fr 90px 40px;gap:7px;padding:9px;border-top:1px solid var(--line);align-items:center}.mrow:first-child{border-top:0}
+.table-head,.item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;align-items:center}.table-head{font-size:11px;font-weight:850;text-transform:uppercase;color:var(--muted);padding-bottom:6px}.item-row{padding:9px 0;border-top:1px solid var(--line)}.item-name{font-weight:800;font-size:14px}.money{text-align:right;font-weight:800}
+.summary{margin-top:13px;background:#f7f9fc;border:1px solid var(--line);border-radius:11px;padding:11px}.srow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e4e9f0}.srow:last-child{border:0}.grand{font-size:20px;font-weight:900;color:var(--green)}
+.note{font-size:12px;color:var(--muted);line-height:1.4;margin-top:7px}
+@media(max-width:760px){.grid3{grid-template-columns:1fr}.grid4,.table-head,.item-row{grid-template-columns:1.55fr .8fr .9fr .9fr}main{padding:8px}.body{padding:10px}}
+@media print{.toolbar,.actions,.upload,.photo-tabs button,.danger{display:none!important}.card{box-shadow:none;break-inside:avoid}body{background:white}}
+</style>
+</head>
+<body>
+<header><h1>SNR Gutter Pro</h1><p>Multi-photo measurement and estimating tool</p></header>
+<main>
+
+<section class="card"><div class="title">Job Information</div><div class="body">
+<div class="grid3">
+<div><label>Customer / Job Name</label><input id="jobName" placeholder="Smith Residence"></div>
+<div><label>Property Address</label><input id="address" placeholder="Street, City, State"></div>
+<div><label>Estimate Date</label><input id="estimateDate" type="date"></div>
+</div></div></section>
+
+<section class="card"><div class="title">House Photos & Measurements</div><div class="body">
+<label class="upload primary" for="photoInput">Add Another House Photo</label>
+<input id="photoInput" type="file" accept="image/*" capture="environment" multiple>
+<div class="photo-tabs" id="photoTabs"></div>
+<div class="toolbar">
+<button class="primary" id="gutterMode">Draw Gutter</button>
+<button class="dark" id="downMode">Draw Downspout</button>
+<button class="secondary" id="undoBtn">Undo</button>
+<button class="danger" id="deletePhotoBtn">Delete Current Photo</button>
+<button class="success" id="savePhotoBtn">Save Marked Photo</button>
+</div>
+<div class="canvas-shell"><canvas id="canvas"></canvas><div class="placeholder" id="placeholder">Add photos of the front, rear and sides of the house. Select a photo, draw a line, then enter the footage.</div></div>
+<div class="note">Red lines are gutters. Blue lines are downspouts. Footage from every photo is combined automatically.</div>
+<div class="measurements" id="measurementList"></div>
+</div></section>
+
+<section class="card"><div class="title">Estimate Calculator</div><div class="body">
+<div class="table-head"><div>Item</div><div>Quantity</div><div>Price Each</div><div>Total</div></div>
+<div id="estimateRows"></div>
+<div class="summary">
+<div class="srow"><span>Gutter and accessory subtotal</span><strong id="baseSubtotal">$0.00</strong></div>
+<div class="srow"><span>Gutter cover subtotal</span><strong id="coverSubtotal">$0.00</strong></div>
+<div class="srow"><span>Labor / material deduction</span><strong id="deductionDisplay">-$0.00</strong></div>
+<div class="srow"><span>Other added pricing</span><strong id="adjustmentDisplay">$0.00</strong></div>
+<div class="srow grand"><span>Estimated Profit / Balance</span><span id="grandTotal">$0.00</span></div>
+</div></div></section>
+
+<section class="card"><div class="title">Gutter Covers</div><div class="body">
+<div class="grid4">
+<div><label>Gutter Cover Type / Brand</label><input id="coverType" placeholder="LeafBlaster Pro, Shur Flo, Bulldog..."></div>
+<div><label>Footage</label><input id="coverFeet" type="number" min="0" step=".1" value="0"></div>
+<div><label>Price per Foot</label><input id="coverRate" type="number" min="0" step=".01" value="0"></div>
+<div><label>Total</label><input id="coverTotalField" readonly value="$0.00"></div>
+</div></div></section>
+
+<section class="card"><div class="title">Deductions & Notes</div><div class="body">
+<div class="grid3">
+<div><label>Labor / Material Deduction</label><input id="deduction" type="number" min="0" step=".01" value="0"></div>
+<div><label>Other Added Pricing</label><input id="adjustment" type="number" step=".01" value="0"></div>
+<div><label>Optional Sales Tax %</label><input id="taxRate" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div style="margin-top:10px"><label>Job Notes</label><textarea id="notes" rows="4" placeholder="Color, gutter size, fascia repairs, special conditions, etc."></textarea></div>
+<div class="actions">
+<button class="dark" onclick="window.print()">Print / Save PDF</button>
+<button class="secondary" id="saveJobBtn">Save Job</button>
+<button class="secondary" id="loadJobBtn">Load Saved Job</button>
+<button class="danger" id="resetBtn">Start New Job</button>
+</div>
+</div></section>
+
+</main>
+<script>
+const items=[
+{id:'gutterFeet',name:'Gutter footage',unit:'ft'},
+{id:'downspoutFeet',name:'Downspout footage',unit:'ft'},
+{id:'elbows',name:'Elbows',unit:'each'},
+{id:'endcaps',name:'Sets of endcaps',unit:'set'},
+{id:'outlets',name:'Outlets',unit:'each'},
+{id:'miters',name:'Miters',unit:'each'}
+];
+const rows=document.getElementById('estimateRows');
+items.forEach(i=>{const r=document.createElement('div');r.className='item-row';r.innerHTML=`<div class="item-name">${i.name}<div class="note">${i.unit}</div></div><input id="${i.id}" type="number" min="0" step=".1" value="0"><input id="${i.id}Rate" type="number" min="0" step=".01" value="0"><div class="money" id="${i.id}Total">$0.00</div>`;rows.appendChild(r)});
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+function calc(){let base=0;items.forEach(i=>{let q=+document.getElementById(i.id).value||0,r=+document.getElementById(i.id+'Rate').value||0,t=q*r;base+=t;document.getElementById(i.id+'Total').textContent=money(t)});
+let cf=+coverFeet.value||0,cr=+coverRate.value||0,c=cf*cr,d=+deduction.value||0,a=+adjustment.value||0,tax=(base+c)*(+taxRate.value||0)/100;
+baseSubtotal.textContent=money(base+tax);coverSubtotal.textContent=money(c);coverTotalField.value=money(c);deductionDisplay.textContent='-'+money(d);adjustmentDisplay.textContent=money(a);grandTotal.textContent=money(base+c+tax+a-d)}
+document.addEventListener('input',calc);estimateDate.valueAsDate=new Date();
+
+let photos=[],currentIndex=-1,mode='gutter',drawing=false,start=null,current=null;
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),placeholder=document.getElementById('placeholder');
+function active(){return photos[currentIndex]}
+function setMode(m){mode=m;gutterMode.style.outline=m==='gutter'?'3px solid #f5b700':'none';downMode.style.outline=m==='downspout'?'3px solid #f5b700':'none'}setMode('gutter');
+gutterMode.onclick=()=>setMode('gutter');downMode.onclick=()=>setMode('downspout');
+
+photoInput.onchange=e=>{[...e.target.files].forEach((file,idx)=>{const rd=new FileReader();rd.onload=ev=>{const img=new Image();img.onload=()=>{let scale=Math.min(1,1600/img.width),w=Math.round(img.width*scale),h=Math.round(img.height*scale);let tc=document.createElement('canvas');tc.width=w;tc.height=h;tc.getContext('2d').drawImage(img,0,0,w,h);photos.push({name:file.name.replace(/\.[^.]+$/,'')||`House Photo ${photos.length+1}`,src:tc.toDataURL('image/jpeg',.86),annotations:[]});currentIndex=photos.length-1;renderTabs();loadActive()};img.src=ev.target.result};rd.readAsDataURL(file)});e.target.value=''};
+
+function renderTabs(){photoTabs.innerHTML='';photos.forEach((p,i)=>{let b=document.createElement('button');b.className='photo-tab'+(i===currentIndex?' active':'');b.textContent=p.name;b.onclick=()=>{currentIndex=i;renderTabs();loadActive()};b.ondblclick=()=>{let n=prompt('Name this photo:',p.name);if(n){p.name=n;renderTabs()}};photoTabs.appendChild(b)})}
+function loadActive(){let p=active();if(!p){canvas.width=300;canvas.height=270;ctx.clearRect(0,0,300,270);placeholder.style.display='flex';renderMeasurements();return}let img=new Image();img.onload=()=>{p.img=img;canvas.width=img.width;canvas.height=img.height;placeholder.style.display='none';redraw();renderMeasurements()};img.src=p.src}
+function point(evt){let r=canvas.getBoundingClientRect(),t=evt.touches?evt.touches[0]:evt;return{x:(t.clientX-r.left)*canvas.width/r.width,y:(t.clientY-r.top)*canvas.height/r.height}}
+function begin(evt){if(!active())return;evt.preventDefault();drawing=true;start=point(evt);current=start}
+function move(evt){if(!drawing)return;evt.preventDefault();current=point(evt);redraw(true)}
+function end(evt){if(!drawing)return;evt.preventDefault();drawing=false;let r=canvas.getBoundingClientRect(),t=evt.changedTouches?evt.changedTouches[0]:evt,end={x:(t.clientX-r.left)*canvas.width/r.width,y:(t.clientY-r.top)*canvas.height/r.height};if(Math.hypot(end.x-start.x,end.y-start.y)<10){redraw();return}
+let val=prompt(mode==='gutter'?'Gutter footage for this line:':'Downspout footage for this line:','');if(val===null){redraw();return}let feet=parseFloat(String(val).replace(/[^\d.]/g,''));if(!Number.isFinite(feet)){alert('Enter a valid footage.');redraw();return}
+active().annotations.push({type:mode,x1:start.x,y1:start.y,x2:end.x,y2:end.y,feet});redraw();renderMeasurements();syncTotals()}
+canvas.addEventListener('mousedown',begin);canvas.addEventListener('mousemove',move);window.addEventListener('mouseup',end);canvas.addEventListener('touchstart',begin,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+
+function arrow(a,preview=false){let color=a.type==='gutter'?'#ed1111':'#075cff';ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=Math.max(5,canvas.width/260);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(a.x1,a.y1);ctx.lineTo(a.x2,a.y2);ctx.stroke();let ang=Math.atan2(a.y2-a.y1,a.x2-a.x1),sz=Math.max(14,canvas.width/90);ctx.beginPath();ctx.moveTo(a.x2,a.y2);ctx.lineTo(a.x2-sz*Math.cos(ang-Math.PI/6),a.y2-sz*Math.sin(ang-Math.PI/6));ctx.lineTo(a.x2-sz*Math.cos(ang+Math.PI/6),a.y2-sz*Math.sin(ang+Math.PI/6));ctx.closePath();ctx.fill();
+if(!preview){let mx=(a.x1+a.x2)/2,my=(a.y1+a.y2)/2,text=`${a.feet} ft ${a.type==='gutter'?'GUTTER':'DOWNSPOUT'}`,fs=Math.max(18,canvas.width/55);ctx.font=`800 ${fs}px Arial`;ctx.textAlign='center';ctx.textBaseline='middle';let w=ctx.measureText(text).width+20,h=fs+14;ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillRect(mx-w/2,my-h/2,w,h);ctx.strokeStyle=color;ctx.lineWidth=3;ctx.strokeRect(mx-w/2,my-h/2,w,h);ctx.fillStyle=color;ctx.fillText(text,mx,my+1)}ctx.restore()}
+function redraw(preview=false){let p=active();if(!p||!p.img)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(p.img,0,0);p.annotations.forEach(arrow);if(preview&&start&&current)arrow({type:mode,x1:start.x,y1:start.y,x2:current.x,y2:current.y},true)}
+function renderMeasurements(){let p=active();if(!p||!p.annotations.length){measurementList.innerHTML='<div class="note" style="padding:10px">No lines on this photo yet.</div>';return}measurementList.innerHTML='';p.annotations.forEach((a,i)=>{let r=document.createElement('div');r.className='mrow';r.innerHTML=`<strong>${a.type==='gutter'?'Gutter':'Downspout'} line ${i+1}</strong><span>${a.feet} ft</span><button class="danger">×</button>`;r.querySelector('button').onclick=()=>{p.annotations.splice(i,1);redraw();renderMeasurements();syncTotals()};measurementList.appendChild(r)})}
+function syncTotals(){let g=0,d=0;photos.forEach(p=>p.annotations.forEach(a=>a.type==='gutter'?g+=a.feet:d+=a.feet));gutterFeet.value=+g.toFixed(2);downspoutFeet.value=+d.toFixed(2);calc()}
+undoBtn.onclick=()=>{let p=active();if(p){p.annotations.pop();redraw();renderMeasurements();syncTotals()}};
+deletePhotoBtn.onclick=()=>{if(currentIndex<0)return;if(confirm('Delete this photo and its measurements?')){photos.splice(currentIndex,1);currentIndex=Math.min(currentIndex,photos.length-1);renderTabs();loadActive();syncTotals()}};
+savePhotoBtn.onclick=()=>{let p=active();if(!p)return alert('Add a photo first.');redraw();let a=document.createElement('a');a.download=(p.name||'gutter-photo').replace(/[^\w-]+/g,'-')+'.png';a.href=canvas.toDataURL('image/png');a.click()};
+
+function data(){let fields={};document.querySelectorAll('input,textarea').forEach(e=>{if(e.id&&e.id!=='photoInput')fields[e.id]=e.value});return{photos:photos.map(p=>({name:p.name,src:p.src,annotations:p.annotations})),currentIndex,fields}}
+saveJobBtn.onclick=()=>{localStorage.setItem('snrGutterProJob',JSON.stringify(data()));alert('Job saved on this device.')};
+loadJobBtn.onclick=()=>{let raw=localStorage.getItem('snrGutterProJob');if(!raw)return alert('No saved job found.');let x=JSON.parse(raw);photos=x.photos||[];currentIndex=Math.min(x.currentIndex??0,photos.length-1);Object.entries(x.fields||{}).forEach(([k,v])=>{let e=document.getElementById(k);if(e)e.value=v});renderTabs();loadActive();syncTotals();calc()};
+resetBtn.onclick=()=>{if(!confirm('Clear the current job?'))return;photos=[];currentIndex=-1;document.querySelectorAll('input[type=number]').forEach(e=>e.value=0);['jobName','address','coverType','notes'].forEach(k=>document.getElementById(k).value='');estimateDate.valueAsDate=new Date();renderTabs();loadActive();syncTotals();calc()};
+calc();
+</script>
+</body>
+</html>
