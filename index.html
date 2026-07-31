@@ -1,1 +1,52 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111827"><title>SNR Gutter Pro</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css"></head><body><header class="topbar"><div><h1>SNR Gutter Pro</h1><p>Photo Measure • Price • Profit</p></div><div class="topbar-actions"><button id="crewPdfBtn" class="pdf-button">Crew PDF</button><button id="saveJobBtn" class="ghost">Save</button></div></header><main><section class="card"><div class="section-title"><h2>Job Information</h2><span id="saveStatus">Not saved</span></div><div class="grid two"><label>Customer / Job Name<input id="jobName" placeholder="Smith Residence"></label><label>Date<input id="jobDate" type="date"></label><label>Address<input id="address" placeholder="Property address"></label><label>Phone<input id="phone" type="tel" placeholder="Phone number"></label></div><label>Notes<textarea id="notes" placeholder="Color, access notes, special instructions..."></textarea></label></section><section class="card"><div class="section-title"><div><h2>Property Photos</h2><p class="muted">Choose a tool, then tap the photo. The same tool stays selected for fast entry.</p></div><button id="addPhotoBtn" class="primary">Add Photo</button></div><input id="photoInput" type="file" accept="image/*" capture="environment" multiple hidden><div id="photos" class="photo-list"><div class="empty-state"><strong>No photos added yet</strong><span>Tap “Add Photo” to start measuring.</span></div></div></section><section class="card"><h2>Live Totals</h2><div id="totalsGrid" class="totals-grid"></div></section><section class="card"><h2>Pricing & Profit</h2><div class="formula">Billable footage = gutter + downspout + 1 ft per elbow + 1 ft per outlet + 1 ft per end-cap pair + 3 ft per miter.</div><div class="grid two"><label>Price per Billable Foot<div class="money-input"><span>$</span><input id="pricePerFoot" type="number" min="0" step="0.01" value="7.50"></div></label><label>Materials<div class="money-input"><span>$</span><input id="materials" type="number" min="0" step="0.01" value="0"></div></label><label>Labor<div class="money-input"><span>$</span><input id="labor" type="number" min="0" step="0.01" value="0"></div></label><label>Delivery<div class="money-input"><span>$</span><input id="delivery" type="number" min="0" step="0.01" value="0"></div></label><label>Other Costs<div class="money-input"><span>$</span><input id="otherCosts" type="number" min="0" step="0.01" value="0"></div></label></div><div class="financial-summary"><div><span>Billable Footage</span><strong id="billableFeet">0 ft</strong></div><div><span>Customer Price</span><strong id="customerPrice">$0.00</strong></div><div><span>Total Costs</span><strong id="totalCosts">$0.00</strong></div><div class="profit"><span>Gross Profit</span><strong id="grossProfit">$0.00</strong></div></div></section><section class="card"><div class="section-title"><h2>Saved Jobs</h2><button id="newJobBtn" class="ghost">New Job</button></div><div id="savedJobs" class="saved-jobs"></div></section></main><template id="photoCardTemplate"><article class="photo-card"><div class="photo-header"><input class="photo-label" value="Photo"><button class="delete-photo danger">Delete Photo</button></div><div class="workspace-wrap"><div class="workspace"><img class="property-photo" alt="Property photo"><div class="marker-layer"></div></div></div><div class="toolbar" role="toolbar"></div><div class="photo-summary"></div></article></template><div id="entryPopover" class="popover hidden"><div class="popover-title" id="popoverTitle">Measurement</div><label id="measurementLabel"><span id="measurementText">Feet</span><input id="measurementInput" type="number" min="0" step="0.5" inputmode="decimal"></label><div class="popover-actions"><button id="cancelEntry" class="ghost">Cancel</button><button id="saveEntry" class="primary">Save</button></div></div><div id="toast" class="toast hidden"></div><div id="crewReport" class="crew-report" aria-hidden="true"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<title>SNR Gutter Pro</title>
+</head>
+<body>
+<header><div><h1>SNR Gutter Pro</h1><small>Photo Measure • Price • PDF</small></div><span id="saveStatus">Unsaved</span></header>
+<main>
+<section class="card"><h2>Job Information</h2><div class="grid">
+<label>Customer / Job Name<input id="jobName" placeholder="Smith Residence"></label>
+<label>Date<input id="jobDate" type="date"></label>
+<label>Address<input id="address" placeholder="Property address"></label>
+<label>Phone<input id="phone" type="tel" placeholder="Phone number"></label>
+<label>Gutter Style<select id="gutterStyle"><option>K-Style</option><option>Half-Round</option></select></label>
+<label>Downspout Style<select id="downspoutStyle"><option>Rectangular</option><option>Round</option></select></label>
+</div><label>Notes<textarea id="notes" placeholder="Color, access notes, special instructions..."></textarea></label></section>
+
+<section class="card photo-section"><div class="section-head"><div><h2>Property Photos</h2><p>Add as many photos as needed. Pinch to zoom, drag with two fingers, then tap to place a marker.</p></div><button class="primary no-print" id="addPhotoBtn">Add Photo</button></div><input id="photoInput" hidden type="file" accept="image/*" capture="environment" multiple><div id="photos"></div></section>
+
+<section class="card"><h2>Live Item Totals</h2><div id="totalsGrid" class="totals-grid"></div></section>
+
+<section class="card"><h2>Pricing</h2><p class="note">Billable footage = gutter + downspout + 1 ft per elbow + 1 ft per outlet + 1 ft per end-cap pair + 3 ft per miter.</p><div class="grid">
+<label>Price per Billable Foot<input id="pricePerFoot" type="number" step=".01" value="7.50"></label>
+<label>Additional Customer Charge<input id="customerExtra" type="number" step=".01" value="0"></label>
+<label>Customer Discount<input id="customerDiscount" type="number" step=".01" value="0"></label>
+<label class="internal">Materials Cost<input id="materials" type="number" step=".01" value="0"></label>
+<label class="internal">Labor Cost<input id="labor" type="number" step=".01" value="0"></label>
+<label class="internal">Delivery Cost<input id="delivery" type="number" step=".01" value="0"></label>
+<label class="internal">Other Costs<input id="otherCosts" type="number" step=".01" value="0"></label>
+</div></section>
+
+<section class="card"><h2>Final Calculations</h2><div class="rows">
+<div><span>Total Billable Footage</span><strong id="billableFeet">0 ft</strong></div>
+<div><span>Customer Price</span><strong id="customerPrice">$0.00</strong></div>
+<div class="internal"><span>Total Costs</span><strong id="totalCosts">$0.00</strong></div>
+<div class="profit internal"><span>Gross Profit</span><strong id="grossProfit">$0.00</strong></div>
+</div></section>
+
+<section class="card actions no-print"><button class="primary" id="saveJobBtn">Save Job</button><button id="printBtn">Print / Save PDF</button><button id="newJobBtn">Start New Job</button></section>
+<section class="card no-print"><h2>Saved Jobs</h2><div id="savedJobs"></div></section>
+</main>
+
+<template id="photoCardTemplate"><article class="photo-card"><div class="photo-head"><input class="photo-label" value="Photo"><button class="danger delete-photo">Delete</button></div><div class="toolbar-shell no-print"><button class="collapse-tools">Hide Tools</button><div class="toolbar"></div><div class="toolbar-actions"><button class="undo">Undo</button><button class="redo">Redo</button><button class="reset-zoom">Reset Zoom</button></div></div><div class="canvas-viewport"><div class="canvas-stage"><img class="property-photo" alt="Property"><div class="marker-layer"></div></div></div><div class="photo-summary"></div></article></template>
+
+<div id="entryPopover" class="modal hidden"><div class="modal-card"><h3 id="popoverTitle">Add Marker</h3><label id="measurementLabel">Length in feet<input id="measurementInput" type="number" inputmode="decimal" step=".1"></label><div class="modal-actions"><button id="deleteEntry" class="danger hidden">Delete</button><button id="cancelEntry">Cancel</button><button id="saveEntry" class="primary">Save</button></div></div></div>
+<script src="app.js"></script>
+</body></html>

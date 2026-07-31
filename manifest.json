@@ -1,8 +1,1 @@
-{
-  "name": "SNR Gutter Pro",
-  "short_name": "Gutter Pro",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f3f4f6",
-  "theme_color": "#111827"
-}
+{"name":"SNR Gutter Pro","short_name":"Gutter Pro","start_url":"./index.html","display":"standalone","background_color":"#eef1f5","theme_color":"#111827","description":"SNR Contracting gutter measurement and estimating tool"}
