@@ -6,102 +6,175 @@
 <meta name="theme-color" content="#111827">
 <title>SNR Gutter Pro</title>
 <style>
-:root{--navy:#111827;--gold:#f5b700;--light:#f3f4f6;--card:#fff;--red:#dc2626;--green:#15803d;--muted:#6b7280}
-*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--light);color:#111827}
-header{position:sticky;top:0;z-index:20;background:var(--navy);color:white;padding:14px 16px;box-shadow:0 2px 8px #0003}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand h1{font-size:20px;margin:0}.brand small{color:#d1d5db}
-main{max-width:900px;margin:auto;padding:14px 14px 80px}
+:root{
+  --navy:#111827;--gold:#f5b700;--light:#f3f4f6;--card:#fff;--red:#dc2626;
+  --green:#15803d;--blue:#2563eb;--purple:#7e22ce;--orange:#ea580c;--teal:#0f766e;
+  --muted:#6b7280;--border:#d1d5db
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--light);color:#111827}
+header{position:sticky;top:0;z-index:50;background:var(--navy);color:white;padding:13px 15px;box-shadow:0 2px 8px #0004}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand h1{font-size:20px;margin:0}.brand small{color:#d1d5db}
+main{max-width:920px;margin:auto;padding:14px 14px 90px}
 .card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px #00000012}
-h2{font-size:18px;margin:0 0 12px} h3{font-size:16px;margin:14px 0 8px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:16px;margin:14px 0 8px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid.one{grid-template-columns:1fr}
-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:5px}
-input,select,textarea,button{font:inherit} input,select,textarea{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;background:white}
+label{display:block;font-size:13px;font-weight:750;color:#374151;margin-bottom:5px}
+input,select,textarea,button{font:inherit}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:white}
 textarea{min-height:72px;resize:vertical}
 button{border:0;border-radius:11px;padding:12px 14px;font-weight:800;cursor:pointer}
-.primary{background:var(--gold);color:#111827}.dark{background:var(--navy);color:white}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
+.primary{background:var(--gold);color:#111827}.dark{background:var(--navy);color:white}
+.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
 .button-row{display:flex;gap:8px;flex-wrap:wrap}.button-row button{flex:1;min-width:120px}
-.photo-card{border:1px solid #e5e7eb;border-radius:14px;padding:10px;margin-top:12px}
-.photo-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.photo-toolbar button{padding:9px 10px;font-size:13px}
-.canvas-wrap{position:relative;overflow:hidden;border-radius:12px;background:#111827;touch-action:none;min-height:180px}
-.canvas-wrap img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
-.marker{position:absolute;transform:translate(-50%,-50%);min-width:34px;height:34px;border-radius:18px;padding:4px 8px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:900;border:2px solid white;box-shadow:0 2px 6px #0008;white-space:nowrap}
-.marker.gutter{background:#2563eb}.marker.inside,.marker.outside{background:#dc2626}.marker.downspout{background:#16a34a}.marker.diverter{background:#9333ea}
-.marker-label{position:absolute;transform:translate(-50%,6px);background:#000c;color:white;border-radius:6px;padding:3px 5px;font-size:11px;white-space:nowrap;pointer-events:none}
-.help{font-size:12px;color:var(--muted);line-height:1.4}.active-tool{outline:3px solid var(--gold)}
-.item-row{display:grid;grid-template-columns:1fr 100px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #eee}.item-row:last-child{border-bottom:0}
-.result-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e5e7eb}.result-row.total{font-size:18px;font-weight:900;border-top:2px solid var(--navy);border-bottom:0;margin-top:4px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#e5e7eb;font-size:12px;font-weight:800}
-.saved-job{border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-top:9px}.saved-job strong{display:block}.saved-job small{color:var(--muted)}
-.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed #d1d5db;border-radius:12px}
+.help{font-size:12px;color:var(--muted);line-height:1.45}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#e5e7eb;color:#111827;font-size:12px;font-weight:850}
 .hidden{display:none!important}
-@media(max-width:620px){.grid{grid-template-columns:1fr}.item-row{grid-template-columns:1fr 88px}}
-@media print{header,.no-print,#savedSection{display:none!important}body{background:white}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}main{padding:0}.photo-toolbar{display:none}.canvas-wrap{min-height:0}}
+.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+.photo-card{border:1px solid #e5e7eb;border-radius:14px;padding:10px;margin-top:12px}
+.tool-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 1px 10px;scrollbar-width:none}
+.tool-scroll::-webkit-scrollbar{display:none}
+.tool{flex:0 0 auto;padding:10px 11px;font-size:12px;background:#e5e7eb}
+.tool.active{outline:3px solid var(--gold);background:#fff}
+.canvas-wrap{position:relative;overflow:hidden;border-radius:12px;background:#111827;min-height:190px;touch-action:manipulation}
+.canvas-wrap img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.marker{position:absolute;transform:translate(-50%,-50%);min-width:36px;height:36px;border-radius:20px;padding:4px 8px;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:900;border:2px solid white;box-shadow:0 2px 7px #0009;white-space:nowrap;z-index:4}
+.marker.gutter{background:var(--blue)}.marker.downspout{background:var(--green)}
+.marker.inside,.marker.outside{background:var(--red)}.marker.outlet{background:var(--teal)}
+.marker.endcap{background:var(--orange)}.marker.twoCrimp{background:var(--purple)}
+.marker.fourCrimp{background:#4f46e5}.marker.diverter{background:#a16207}
+.marker-label{position:absolute;transform:translate(-50%,11px);background:#000d;color:white;border-radius:6px;padding:3px 5px;font-size:10px;white-space:nowrap;z-index:3;pointer-events:none}
+.result-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e5e7eb}
+.result-row strong{text-align:right}
+.result-row.total{font-size:18px;font-weight:900;border-top:2px solid var(--navy);border-bottom:0;margin-top:5px}
+.result-row.profit{font-size:20px;font-weight:950;background:#ecfdf5;margin:8px -8px 0;padding:13px 8px;border-radius:10px;border:0}
+.section-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:900;margin:14px 0 5px}
+.saved-job{border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-top:9px}.saved-job strong{display:block}.saved-job small{color:var(--muted)}
+.modal-backdrop{position:fixed;inset:0;background:#0009;z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.modal{background:white;width:min(520px,100%);border-radius:18px;padding:18px;box-shadow:0 18px 60px #0008}
+.modal h3{margin:0 0 12px;font-size:19px}
+.count-grid{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}
+.count-grid div{padding:7px 0;border-bottom:1px solid #eee}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px;font-size:12px;line-height:1.45}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+@media print{
+ header,.no-print,#savedSection{display:none!important}body{background:white}
+ .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}main{padding:0}
+ .tool-scroll{display:none}.canvas-wrap{min-height:0}.internal-only{display:none!important}
+}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><div><h1>SNR Gutter Pro</h1><small>Photo Measure & Estimate</small></div><span class="badge" id="saveStatus">Not saved</span></div>
+  <div class="brand">
+    <div><h1>SNR Gutter Pro</h1><small>Tap Measure • Price • Profit</small></div>
+    <span class="badge" id="saveStatus">Not saved</span>
+  </div>
 </header>
+
 <main>
 <section class="card">
 <h2>Job Information</h2>
 <div class="grid">
-<div><label>Customer / Job Name</label><input id="jobName" placeholder="Smith Residence"></div>
-<div><label>Date</label><input id="jobDate" type="date"></div>
-<div><label>Address</label><input id="address" placeholder="Property address"></div>
-<div><label>Phone</label><input id="phone" type="tel" placeholder="Phone number"></div>
+  <div><label>Customer / Job Name</label><input id="jobName" placeholder="Smith Residence"></div>
+  <div><label>Date</label><input id="jobDate" type="date"></div>
+  <div><label>Address</label><input id="address" placeholder="Property address"></div>
+  <div><label>Phone</label><input id="phone" type="tel" placeholder="Phone number"></div>
 </div>
-<div style="margin-top:10px"><label>Notes</label><textarea id="notes" placeholder="Color, special instructions, access notes..."></textarea></div>
+<div style="margin-top:10px"><label>Notes</label><textarea id="notes" placeholder="Color, access notes, special instructions..."></textarea></div>
 </section>
 
 <section class="card">
 <h2>Gutter System</h2>
 <div class="grid">
-<div><label>Gutter Style</label><select id="gutterStyle"><option>K-Style</option><option>Half-Round</option></select></div>
-<div><label>Downspout Style</label><select id="downspoutStyle"><option>Rectangular</option><option>Round</option></select></div>
+  <div><label>Gutter Style</label><select id="gutterStyle"><option>K-Style</option><option>Half-Round</option></select></div>
+  <div><label>Downspout Style</label><select id="downspoutStyle"><option>Rectangular</option><option>Round</option></select></div>
 </div>
 </section>
 
 <section class="card">
-<h2>Property Photos & Measurements</h2>
-<p class="help">Add a photo, choose a marker tool, then tap the exact location on the photo. Gutter and downspout markers ask for footage. Each inside or outside miter automatically adds 3 billable feet.</p>
-<div class="button-row no-print"><button class="primary" id="addPhotoBtn">📷 Add Property Photo</button><input id="photoInput" class="hidden" type="file" accept="image/*" capture="environment"></div>
+<h2>Property Photos & Tap Measurements</h2>
+<p class="help">Choose a tool once, then tap as many items as needed on the same photo. Gutter and downspout taps ask for a length. The selected tool stays active until you change it.</p>
+<div class="button-row no-print">
+  <button class="primary" id="addPhotoBtn">📷 Add Property Photo</button>
+  <input id="photoInput" class="hidden" type="file" accept="image/*" capture="environment" multiple>
+</div>
 <div id="photos"></div>
 </section>
 
 <section class="card">
-<h2>Material Counts</h2>
-<div id="items"></div>
-</section>
-
-<section class="card">
-<h2>Pricing</h2>
-<div class="grid">
-<div><label>Price per Billable Gutter Foot</label><input id="gutterRate" type="number" min="0" step=".01" value="0"></div>
-<div><label>Price per Downspout Foot</label><input id="downspoutRate" type="number" min="0" step=".01" value="0"></div>
-<div><label>Additional Material / Labor</label><input id="additionalCharge" type="number" min="0" step=".01" value="0"></div>
-<div><label>Discount / Deduction</label><input id="deduction" type="number" min="0" step=".01" value="0"></div>
+<h2>Live Item Count</h2>
+<div class="count-grid">
+  <div>Gutter footage</div><strong id="countGutter">0 ft</strong>
+  <div>Downspout footage</div><strong id="countDownspout">0 ft</strong>
+  <div>Inside miters</div><strong id="countInside">0</strong>
+  <div>Outside miters</div><strong id="countOutside">0</strong>
+  <div>Outlets</div><strong id="countOutlets">0</strong>
+  <div>End caps</div><strong id="countEndcaps">0</strong>
+  <div>2-crimp elbows</div><strong id="countTwo">0</strong>
+  <div>4-crimp elbows</div><strong id="countFour">0</strong>
+  <div>Diverters</div><strong id="countDiverters">0</strong>
 </div>
 </section>
 
 <section class="card">
-<h2>Calculated Totals</h2>
-<div class="result-row"><span>Measured gutter footage</span><strong id="gutterFeetOut">0 ft</strong></div>
-<div class="result-row"><span>Inside miters</span><strong id="insideOut">0</strong></div>
-<div class="result-row"><span>Outside miters</span><strong id="outsideOut">0</strong></div>
-<div class="result-row"><span>Miter allowance</span><strong id="miterFeetOut">0 ft</strong></div>
-<div class="result-row"><span>Billable gutter footage</span><strong id="billableOut">0 ft</strong></div>
+<h2>Customer Price</h2>
+<div class="note">
+  Billable footage includes actual gutter and downspout footage, 1 foot per elbow, 1 foot per outlet, 1 foot per pair of end caps, and 3 feet per miter.
+</div>
+<div class="grid" style="margin-top:12px">
+  <div><label>Price per Billable Foot</label><input id="rate" type="number" min="0" step=".01" value="7.50"></div>
+  <div><label>Additional Customer Charge</label><input id="customerExtra" type="number" min="0" step=".01" value="0"></div>
+  <div><label>Customer Discount / Deduction</label><input id="customerDiscount" type="number" min="0" step=".01" value="0"></div>
+</div>
+</section>
+
+<section class="card internal-only">
+<h2>Internal SNR Costs</h2>
+<p class="help">These costs are deducted from the customer price to calculate your gross profit. They do not increase the customer quote.</p>
+<div class="grid">
+  <div><label>Materials</label><input id="materialsCost" type="number" min="0" step=".01" value="0"></div>
+  <div><label>Labor</label><input id="laborCost" type="number" min="0" step=".01" value="0"></div>
+  <div><label>Delivery</label><input id="deliveryCost" type="number" min="0" step=".01" value="0"></div>
+  <div><label>Other Job Costs</label><input id="otherCost" type="number" min="0" step=".01" value="0"></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Final Calculations</h2>
+<div class="section-label">Billable Footage</div>
+<div class="result-row"><span>Gutter footage</span><strong id="gutterFeetOut">0 ft</strong></div>
 <div class="result-row"><span>Downspout footage</span><strong id="downspoutFeetOut">0 ft</strong></div>
-<div class="result-row"><span>Additional charges</span><strong id="additionalOut">$0.00</strong></div>
-<div class="result-row"><span>Discount / deduction</span><strong id="deductionOut">-$0.00</strong></div>
-<div class="result-row total"><span>Estimated Total</span><strong id="estimateOut">$0.00</strong></div>
+<div class="result-row"><span>Elbows allowance (1 ft each)</span><strong id="elbowFeetOut">0 ft</strong></div>
+<div class="result-row"><span>Outlets allowance (1 ft each)</span><strong id="outletFeetOut">0 ft</strong></div>
+<div class="result-row"><span>End-cap pairs allowance</span><strong id="endcapFeetOut">0 ft</strong></div>
+<div class="result-row"><span>Miter allowance (3 ft each)</span><strong id="miterFeetOut">0 ft</strong></div>
+<div class="result-row total"><span>Total Billable Footage</span><strong id="billableOut">0 ft</strong></div>
+
+<div class="section-label">Customer Quote</div>
+<div class="result-row"><span>Billable footage × rate</span><strong id="basePriceOut">$0.00</strong></div>
+<div class="result-row"><span>Additional customer charge</span><strong id="customerExtraOut">$0.00</strong></div>
+<div class="result-row"><span>Customer discount</span><strong id="customerDiscountOut">-$0.00</strong></div>
+<div class="result-row total"><span>Customer Total</span><strong id="customerTotalOut">$0.00</strong></div>
+
+<div class="internal-only">
+<div class="section-label">SNR Profit (Internal)</div>
+<div class="result-row"><span>Materials</span><strong id="materialsOut">-$0.00</strong></div>
+<div class="result-row"><span>Labor</span><strong id="laborOut">-$0.00</strong></div>
+<div class="result-row"><span>Delivery</span><strong id="deliveryOut">-$0.00</strong></div>
+<div class="result-row"><span>Other costs</span><strong id="otherOut">-$0.00</strong></div>
+<div class="result-row"><span>Total job costs</span><strong id="costsOut">-$0.00</strong></div>
+<div class="result-row profit"><span>Gross Profit</span><strong id="profitOut">$0.00</strong></div>
+<div class="result-row"><span>Profit Margin</span><strong id="marginOut">0%</strong></div>
+</div>
 </section>
 
 <section class="card no-print">
 <div class="button-row">
-<button class="primary" id="saveBtn">Save Job</button>
-<button class="dark" onclick="window.print()">Print / Save PDF</button>
-<button class="secondary" id="newBtn">Start New Job</button>
+  <button class="primary" id="saveBtn">Save Job</button>
+  <button class="dark" onclick="window.print()">Print Customer Quote</button>
+  <button class="secondary" id="newBtn">Start New Job</button>
 </div>
 </section>
 
@@ -111,158 +184,309 @@ button{border:0;border-radius:11px;padding:12px 14px;font-weight:800;cursor:poin
 </section>
 </main>
 
+<div id="entryModal" class="modal-backdrop hidden">
+  <div class="modal">
+    <h3 id="modalTitle">Enter Length</h3>
+    <label id="modalLabel">Length in feet</label>
+    <input id="modalValue" type="number" inputmode="decimal" min="0" step=".1" placeholder="Example: 13">
+    <div class="button-row" style="margin-top:14px">
+      <button class="secondary" id="cancelModal">Cancel</button>
+      <button class="primary" id="saveModal">Save Marker</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(n)||0);
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const itemDefs=[
- ["endCaps","End Caps"],["outlets","Outlets"],["diverters","Diverters"],
- ["twoCrimp","2-Crimp Elbows"],["fourCrimp","4-Crimp Elbows"],["gutterCovers","Gutter Covers (ft)"]
-];
-let photos=[], editingId=null, currentTool="gutter";
+const fmt=n=>Number.isInteger(n)?String(n):Number(n).toFixed(1);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
-function buildItems(){
- $("items").innerHTML=itemDefs.map(([id,label])=>`<div class="item-row"><label for="${id}">${label}</label><input id="${id}" type="number" min="0" step="1" value="0"></div>`).join("");
- itemDefs.forEach(([id])=>$(id).addEventListener("input",calculate));
+let photos=[];
+let editingId=null;
+let currentTool="gutter";
+let pendingTap=null;
+
+const tools=[
+  ["gutter","Gutter"],
+  ["downspout","Downspout"],
+  ["inside","Inside Miter"],
+  ["outside","Outside Miter"],
+  ["outlet","Outlet"],
+  ["endcap","End Cap"],
+  ["twoCrimp","2-Crimp Elbow"],
+  ["fourCrimp","4-Crimp Elbow"],
+  ["diverter","Diverter"]
+];
+
+function toolText(type){
+  return Object.fromEntries(tools)[type]||type;
 }
+
 function addPhoto(file){
- const reader=new FileReader();
- reader.onload=e=>{
-   photos.push({id:uid(),name:file.name||"Property photo",src:e.target.result,label:"Photo "+(photos.length+1),markers:[]});
-   renderPhotos(); markDirty();
- };
- reader.readAsDataURL(file);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    photos.push({id:uid(),name:file.name||"Property photo",src:e.target.result,label:"Photo "+(photos.length+1),markers:[]});
+    renderPhotos(); calculate(); markDirty();
+  };
+  reader.readAsDataURL(file);
 }
+
 function renderPhotos(){
- const box=$("photos");
- if(!photos.length){box.innerHTML='<div class="empty">No photos added yet.</div>';return}
- box.innerHTML=photos.map((p,idx)=>`
- <div class="photo-card" data-photo="${p.id}">
-   <div class="grid">
-    <div><label>Photo Label</label><input value="${esc(p.label)}" onchange="renamePhoto('${p.id}',this.value)" placeholder="Front, left side, rear..."></div>
-    <div class="no-print" style="display:flex;align-items:end"><button class="danger" onclick="removePhoto('${p.id}')">Delete Photo</button></div>
-   </div>
-   <div class="photo-toolbar no-print">
-    <button class="${currentTool==='gutter'?'active-tool':''}" onclick="setTool('gutter')">Blue: Gutter</button>
-    <button class="${currentTool==='inside'?'active-tool':''}" onclick="setTool('inside')">Red: Inside Miter</button>
-    <button class="${currentTool==='outside'?'active-tool':''}" onclick="setTool('outside')">Red: Outside Miter</button>
-    <button class="${currentTool==='downspout'?'active-tool':''}" onclick="setTool('downspout')">Green: Downspout</button>
-    <button class="${currentTool==='diverter'?'active-tool':''}" onclick="setTool('diverter')">Purple: Diverter</button>
-    <button class="secondary" onclick="undoMarker('${p.id}')">Undo Last</button>
-   </div>
-   <div class="canvas-wrap" onclick="photoTap(event,'${p.id}')">
-      <img src="${p.src}" alt="${esc(p.label)}">
-      ${p.markers.map(m=>markerHTML(m)).join("")}
-   </div>
-   <p class="help">${p.markers.length} marker${p.markers.length===1?"":"s"} on this photo. Tap an existing marker to delete it.</p>
- </div>`).join("");
+  const box=$("photos");
+  if(!photos.length){box.innerHTML='<div class="empty">No photos added yet.</div>';return}
+  box.innerHTML=photos.map(p=>`
+    <div class="photo-card">
+      <div class="grid">
+        <div><label>Photo Label</label><input value="${esc(p.label)}" onchange="renamePhoto('${p.id}',this.value)" placeholder="Front, rear, left side..."></div>
+        <div class="no-print" style="display:flex;align-items:end"><button class="danger" onclick="removePhoto('${p.id}')">Delete Photo</button></div>
+      </div>
+      <div class="tool-scroll no-print">
+        ${tools.map(([id,label])=>`<button class="tool ${currentTool===id?"active":""}" onclick="setTool('${id}')">${label}</button>`).join("")}
+        <button class="tool" onclick="undoMarker('${p.id}')">↶ Undo</button>
+      </div>
+      <div class="canvas-wrap" onclick="photoTap(event,'${p.id}')">
+        <img src="${p.src}" alt="${esc(p.label)}">
+        ${p.markers.map(markerHTML).join("")}
+      </div>
+      <p class="help">${p.markers.length} marker${p.markers.length===1?"":"s"}. Tap an existing marker to edit or delete it.</p>
+    </div>`).join("");
 }
+
 function markerHTML(m){
- const text=m.type==="gutter"?`${m.value} ft`:m.type==="downspout"?`${m.value} ft`:m.type==="inside"?"IN":m.type==="outside"?"OUT":"D";
- const label=m.type==="inside"?"Inside miter":m.type==="outside"?"Outside miter":m.type==="diverter"?"Diverter":m.type;
- return `<div class="marker ${m.type}" style="left:${m.x}%;top:${m.y}%" onclick="deleteMarker(event,'${m.id}')">${text}</div><div class="marker-label" style="left:${m.x}%;top:${m.y}%">${label}</div>`;
+  let text="";
+  if(m.type==="gutter"||m.type==="downspout") text=`${fmt(m.value)}'`;
+  else if(m.type==="inside") text="IN";
+  else if(m.type==="outside") text="OUT";
+  else if(m.type==="outlet") text="O";
+  else if(m.type==="endcap") text="EC";
+  else if(m.type==="twoCrimp") text="2C";
+  else if(m.type==="fourCrimp") text="4C";
+  else text="D";
+  return `<div class="marker ${m.type}" style="left:${m.x}%;top:${m.y}%" onclick="editMarker(event,'${m.id}')">${text}</div>
+          <div class="marker-label" style="left:${m.x}%;top:${m.y}%">${esc(toolText(m.type))}</div>`;
 }
-function setTool(t){currentTool=t;renderPhotos()}
+
+function setTool(type){currentTool=type;renderPhotos()}
+
 function photoTap(e,pid){
- if(e.target.closest(".marker"))return;
- const wrap=e.currentTarget, r=wrap.getBoundingClientRect();
- const x=((e.clientX-r.left)/r.width)*100, y=((e.clientY-r.top)/r.height)*100;
- let value=1;
- if(currentTool==="gutter"||currentTool==="downspout"){
-   const response=prompt(`Enter ${currentTool==="gutter"?"gutter":"downspout"} footage:`);
-   if(response===null)return;
-   value=parseFloat(response);
-   if(!Number.isFinite(value)||value<0){alert("Please enter a valid footage amount.");return}
- }
- const p=photos.find(x=>x.id===pid); if(!p)return;
- p.markers.push({id:uid(),type:currentTool,x,y,value});
- if(currentTool==="diverter") $("diverters").value=(+($("diverters").value)||0)+1;
- renderPhotos();calculate();markDirty();
+  if(e.target.closest(".marker"))return;
+  const wrap=e.currentTarget,r=wrap.getBoundingClientRect();
+  const x=((e.clientX-r.left)/r.width)*100;
+  const y=((e.clientY-r.top)/r.height)*100;
+  pendingTap={pid,x,y,type:currentTool,editingMarkerId:null};
+
+  if(currentTool==="gutter"||currentTool==="downspout"){
+    $("modalTitle").textContent=`Enter ${toolText(currentTool)} Length`;
+    $("modalLabel").textContent="Length in feet";
+    $("modalValue").value="";
+    $("entryModal").classList.remove("hidden");
+    setTimeout(()=>$("modalValue").focus(),100);
+  }else{
+    commitMarker(1);
+  }
 }
-function deleteMarker(e,mid){
- e.stopPropagation();
- for(const p of photos){
-   const m=p.markers.find(x=>x.id===mid);
-   if(m){
-     if(!confirm("Delete this marker?"))return;
-     if(m.type==="diverter") $("diverters").value=Math.max(0,(+($("diverters").value)||0)-1);
-     p.markers=p.markers.filter(x=>x.id!==mid);break;
-   }
- }
- renderPhotos();calculate();markDirty();
+
+function commitMarker(value){
+  if(!pendingTap)return;
+  const p=photos.find(x=>x.id===pendingTap.pid);
+  if(!p)return;
+  if(pendingTap.editingMarkerId){
+    const m=p.markers.find(x=>x.id===pendingTap.editingMarkerId);
+    if(m)m.value=value;
+  }else{
+    p.markers.push({id:uid(),type:pendingTap.type,x:pendingTap.x,y:pendingTap.y,value});
+  }
+  pendingTap=null;
+  $("entryModal").classList.add("hidden");
+  renderPhotos();calculate();markDirty();
 }
+
+function editMarker(e,mid){
+  e.stopPropagation();
+  let foundPhoto=null,found=null;
+  for(const p of photos){
+    const m=p.markers.find(x=>x.id===mid);
+    if(m){foundPhoto=p;found=m;break}
+  }
+  if(!found)return;
+  const action=confirm(`Edit ${toolText(found.type)}?\n\nTap OK to edit. Tap Cancel to choose whether to delete.`);
+  if(action){
+    if(found.type==="gutter"||found.type==="downspout"){
+      pendingTap={pid:foundPhoto.id,x:found.x,y:found.y,type:found.type,editingMarkerId:found.id};
+      $("modalTitle").textContent=`Edit ${toolText(found.type)} Length`;
+      $("modalLabel").textContent="Length in feet";
+      $("modalValue").value=found.value;
+      $("entryModal").classList.remove("hidden");
+      setTimeout(()=>$("modalValue").focus(),100);
+    }else{
+      alert("This marker does not require a measurement. Delete and re-place it if needed.");
+    }
+  }else if(confirm(`Delete this ${toolText(found.type)} marker?`)){
+    foundPhoto.markers=foundPhoto.markers.filter(x=>x.id!==mid);
+    renderPhotos();calculate();markDirty();
+  }
+}
+
 function undoMarker(pid){
- const p=photos.find(x=>x.id===pid);if(!p||!p.markers.length)return;
- const m=p.markers.pop();
- if(m.type==="diverter") $("diverters").value=Math.max(0,(+($("diverters").value)||0)-1);
- renderPhotos();calculate();markDirty();
+  const p=photos.find(x=>x.id===pid);
+  if(!p||!p.markers.length)return;
+  p.markers.pop();renderPhotos();calculate();markDirty();
 }
+
 function removePhoto(pid){
- if(!confirm("Delete this photo and all of its markers?"))return;
- photos=photos.filter(p=>p.id!==pid);renderPhotos();calculate();markDirty();
+  if(!confirm("Delete this photo and all of its markers?"))return;
+  photos=photos.filter(p=>p.id!==pid);renderPhotos();calculate();markDirty();
 }
 function renamePhoto(pid,v){const p=photos.find(x=>x.id===pid);if(p)p.label=v;markDirty()}
-function totals(){
- const all=photos.flatMap(p=>p.markers);
- const gutterFeet=all.filter(m=>m.type==="gutter").reduce((s,m)=>s+(+m.value||0),0);
- const downspoutFeet=all.filter(m=>m.type==="downspout").reduce((s,m)=>s+(+m.value||0),0);
- const inside=all.filter(m=>m.type==="inside").length;
- const outside=all.filter(m=>m.type==="outside").length;
- const miterFeet=(inside+outside)*3;
- return {gutterFeet,downspoutFeet,inside,outside,miterFeet,billable:gutterFeet+miterFeet};
+
+function getTotals(){
+  const all=photos.flatMap(p=>p.markers);
+  const sum=t=>all.filter(m=>m.type===t).reduce((s,m)=>s+(+m.value||0),0);
+  const count=t=>all.filter(m=>m.type===t).length;
+  const gutter=sum("gutter");
+  const downspout=sum("downspout");
+  const inside=count("inside");
+  const outside=count("outside");
+  const outlets=count("outlet");
+  const endcaps=count("endcap");
+  const two=count("twoCrimp");
+  const four=count("fourCrimp");
+  const diverters=count("diverter");
+  const elbows=two+four;
+  const elbowFeet=elbows;
+  const outletFeet=outlets;
+  const endcapFeet=Math.ceil(endcaps/2);
+  const miterFeet=(inside+outside)*3;
+  const billable=gutter+downspout+elbowFeet+outletFeet+endcapFeet+miterFeet;
+  return {gutter,downspout,inside,outside,outlets,endcaps,two,four,diverters,elbows,elbowFeet,outletFeet,endcapFeet,miterFeet,billable};
 }
+
 function calculate(){
- const t=totals(), gr=+$("gutterRate").value||0, dr=+$("downspoutRate").value||0;
- const additional=+$("additionalCharge").value||0, deduction=+$("deduction").value||0;
- const estimate=t.billable*gr+t.downspoutFeet*dr+additional-deduction;
- $("gutterFeetOut").textContent=`${fmt(t.gutterFeet)} ft`;
- $("insideOut").textContent=t.inside;$("outsideOut").textContent=t.outside;
- $("miterFeetOut").textContent=`${fmt(t.miterFeet)} ft`;
- $("billableOut").textContent=`${fmt(t.billable)} ft`;
- $("downspoutFeetOut").textContent=`${fmt(t.downspoutFeet)} ft`;
- $("additionalOut").textContent=money(additional);$("deductionOut").textContent="-"+money(deduction);
- $("estimateOut").textContent=money(estimate);
- return {...t,estimate};
+  const t=getTotals();
+  const rate=+$("rate").value||0;
+  const extra=+$("customerExtra").value||0;
+  const discount=+$("customerDiscount").value||0;
+  const materials=+$("materialsCost").value||0;
+  const labor=+$("laborCost").value||0;
+  const delivery=+$("deliveryCost").value||0;
+  const other=+$("otherCost").value||0;
+  const base=t.billable*rate;
+  const customerTotal=Math.max(0,base+extra-discount);
+  const costs=materials+labor+delivery+other;
+  const profit=customerTotal-costs;
+  const margin=customerTotal?profit/customerTotal*100:0;
+
+  $("countGutter").textContent=`${fmt(t.gutter)} ft`;
+  $("countDownspout").textContent=`${fmt(t.downspout)} ft`;
+  $("countInside").textContent=t.inside;$("countOutside").textContent=t.outside;
+  $("countOutlets").textContent=t.outlets;$("countEndcaps").textContent=t.endcaps;
+  $("countTwo").textContent=t.two;$("countFour").textContent=t.four;$("countDiverters").textContent=t.diverters;
+
+  $("gutterFeetOut").textContent=`${fmt(t.gutter)} ft`;
+  $("downspoutFeetOut").textContent=`${fmt(t.downspout)} ft`;
+  $("elbowFeetOut").textContent=`${fmt(t.elbowFeet)} ft`;
+  $("outletFeetOut").textContent=`${fmt(t.outletFeet)} ft`;
+  $("endcapFeetOut").textContent=`${fmt(t.endcapFeet)} ft`;
+  $("miterFeetOut").textContent=`${fmt(t.miterFeet)} ft`;
+  $("billableOut").textContent=`${fmt(t.billable)} ft`;
+
+  $("basePriceOut").textContent=money(base);
+  $("customerExtraOut").textContent=money(extra);
+  $("customerDiscountOut").textContent="-"+money(discount);
+  $("customerTotalOut").textContent=money(customerTotal);
+  $("materialsOut").textContent="-"+money(materials);
+  $("laborOut").textContent="-"+money(labor);
+  $("deliveryOut").textContent="-"+money(delivery);
+  $("otherOut").textContent="-"+money(other);
+  $("costsOut").textContent="-"+money(costs);
+  $("profitOut").textContent=money(profit);
+  $("marginOut").textContent=`${margin.toFixed(1)}%`;
+  return {...t,rate,base,extra,discount,customerTotal,materials,labor,delivery,other,costs,profit,margin};
 }
+
 function collect(){
- const data={id:editingId||uid(),savedAt:new Date().toISOString(),jobName:$("jobName").value,address:$("address").value,phone:$("phone").value,jobDate:$("jobDate").value,notes:$("notes").value,gutterStyle:$("gutterStyle").value,downspoutStyle:$("downspoutStyle").value,photos,gutterRate:$("gutterRate").value,downspoutRate:$("downspoutRate").value,additionalCharge:$("additionalCharge").value,deduction:$("deduction").value,items:{}};
- itemDefs.forEach(([id])=>data.items[id]=$(id).value);
- data.results=calculate();return data;
+  return {
+    id:editingId||uid(),savedAt:new Date().toISOString(),
+    jobName:$("jobName").value,address:$("address").value,phone:$("phone").value,
+    jobDate:$("jobDate").value,notes:$("notes").value,gutterStyle:$("gutterStyle").value,
+    downspoutStyle:$("downspoutStyle").value,photos,
+    rate:$("rate").value,customerExtra:$("customerExtra").value,customerDiscount:$("customerDiscount").value,
+    materialsCost:$("materialsCost").value,laborCost:$("laborCost").value,
+    deliveryCost:$("deliveryCost").value,otherCost:$("otherCost").value,results:calculate()
+  };
 }
+
+function getJobs(){try{return JSON.parse(localStorage.getItem("snrGutterJobsV3")||"[]")}catch{return[]}}
+
 function saveJob(){
- if(!$("jobName").value.trim()&&!$("address").value.trim()){alert("Enter a job name or property address first.");return}
- const data=collect(), list=getJobs(), i=list.findIndex(j=>j.id===data.id);
- if(i>=0)list[i]=data;else list.unshift(data);
- try{localStorage.setItem("snrGutterJobsV2",JSON.stringify(list.slice(0,25)));editingId=data.id;$("saveStatus").textContent="Saved";renderSaved();alert("Job saved on this device.");}
- catch(err){alert("This job may contain too many large photos for browser storage. Print or save the estimate, then remove some photos and try again.");}
+  if(!$("jobName").value.trim()&&!$("address").value.trim()){alert("Enter a job name or property address first.");return}
+  const data=collect(),list=getJobs(),i=list.findIndex(j=>j.id===data.id);
+  if(i>=0)list[i]=data;else list.unshift(data);
+  try{
+    localStorage.setItem("snrGutterJobsV3",JSON.stringify(list.slice(0,20)));
+    editingId=data.id;$("saveStatus").textContent="Saved";renderSaved();alert("Job saved on this device.");
+  }catch{
+    alert("The photos may be too large for browser storage. Print the quote or remove some photos, then try again.");
+  }
 }
-function getJobs(){try{return JSON.parse(localStorage.getItem("snrGutterJobsV2")||"[]")}catch{return[]}}
+
 function renderSaved(){
- const list=getJobs(),box=$("savedJobs");
- if(!list.length){box.innerHTML='<div class="empty">No saved jobs yet.</div>';return}
- box.innerHTML=list.map(j=>`<div class="saved-job"><strong>${esc(j.jobName||"Unnamed Job")}</strong><small>${esc(j.address||"")} · ${new Date(j.savedAt).toLocaleString()} · ${money(j.results?.estimate||0)}</small><div class="button-row no-print" style="margin-top:9px"><button class="secondary" onclick="openJob('${j.id}')">Open</button><button class="danger" onclick="deleteJob('${j.id}')">Delete</button></div></div>`).join("");
+  const list=getJobs(),box=$("savedJobs");
+  if(!list.length){box.innerHTML='<div class="empty">No saved jobs yet.</div>';return}
+  box.innerHTML=list.map(j=>`
+    <div class="saved-job">
+      <strong>${esc(j.jobName||"Unnamed Job")}</strong>
+      <small>${esc(j.address||"")} · ${new Date(j.savedAt).toLocaleString()} · Customer ${money(j.results?.customerTotal||0)} · Profit ${money(j.results?.profit||0)}</small>
+      <div class="button-row no-print" style="margin-top:9px">
+        <button class="secondary" onclick="openJob('${j.id}')">Open</button>
+        <button class="danger" onclick="deleteJob('${j.id}')">Delete</button>
+      </div>
+    </div>`).join("");
 }
+
 function openJob(id){
- const j=getJobs().find(x=>x.id===id);if(!j)return;
- editingId=j.id;["jobName","address","phone","jobDate","notes","gutterStyle","downspoutStyle","gutterRate","downspoutRate","additionalCharge","deduction"].forEach(k=>$(k).value=j[k]??"");
- itemDefs.forEach(([k])=>$(k).value=j.items?.[k]??0);photos=j.photos||[];
- renderPhotos();calculate();$("saveStatus").textContent="Saved";scrollTo({top:0,behavior:"smooth"});
+  const j=getJobs().find(x=>x.id===id);if(!j)return;
+  editingId=j.id;
+  const fields=["jobName","address","phone","jobDate","notes","gutterStyle","downspoutStyle","rate","customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"];
+  fields.forEach(k=>$(k).value=j[k]??"");
+  photos=j.photos||[];
+  renderPhotos();calculate();$("saveStatus").textContent="Saved";scrollTo({top:0,behavior:"smooth"});
 }
-function deleteJob(id){if(!confirm("Delete this saved job?"))return;localStorage.setItem("snrGutterJobsV2",JSON.stringify(getJobs().filter(j=>j.id!==id)));renderSaved()}
+
+function deleteJob(id){
+  if(!confirm("Delete this saved job?"))return;
+  localStorage.setItem("snrGutterJobsV3",JSON.stringify(getJobs().filter(j=>j.id!==id)));renderSaved();
+}
+
 function newJob(){
- if(!confirm("Start a new job? Unsaved information will be cleared."))return;
- editingId=null;photos=[];["jobName","address","phone","notes"].forEach(k=>$(k).value="");$("jobDate").value=new Date().toISOString().slice(0,10);
- $("gutterStyle").value="K-Style";$("downspoutStyle").value="Rectangular";["gutterRate","downspoutRate","additionalCharge","deduction"].forEach(k=>$(k).value=0);itemDefs.forEach(([k])=>$(k).value=0);
- renderPhotos();calculate();markDirty();scrollTo({top:0,behavior:"smooth"});
+  if(!confirm("Start a new job? Unsaved information will be cleared."))return;
+  editingId=null;photos=[];
+  ["jobName","address","phone","notes"].forEach(k=>$(k).value="");
+  $("jobDate").value=new Date().toISOString().slice(0,10);
+  $("gutterStyle").value="K-Style";$("downspoutStyle").value="Rectangular";
+  $("rate").value="7.50";
+  ["customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=0);
+  renderPhotos();calculate();markDirty();scrollTo({top:0,behavior:"smooth"});
 }
 function markDirty(){$("saveStatus").textContent="Not saved"}
-function fmt(n){return Number.isInteger(n)?n:n.toFixed(1)}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
 $("addPhotoBtn").onclick=()=>$("photoInput").click();
 $("photoInput").onchange=e=>{[...e.target.files].forEach(addPhoto);e.target.value=""};
-$("saveBtn").onclick=saveJob;$("newBtn").onclick=newJob;
-["jobName","address","phone","jobDate","notes","gutterStyle","downspoutStyle","gutterRate","downspoutRate","additionalCharge","deduction"].forEach(k=>$(k).addEventListener("input",()=>{calculate();markDirty()}));
-buildItems();$("jobDate").value=new Date().toISOString().slice(0,10);renderPhotos();calculate();renderSaved();
+$("saveBtn").onclick=saveJob;
+$("newBtn").onclick=newJob;
+$("cancelModal").onclick=()=>{pendingTap=null;$("entryModal").classList.add("hidden")};
+$("saveModal").onclick=()=>{
+  const v=parseFloat($("modalValue").value);
+  if(!Number.isFinite(v)||v<0){alert("Please enter a valid footage amount.");return}
+  commitMarker(v);
+};
+$("modalValue").addEventListener("keydown",e=>{if(e.key==="Enter")$("saveModal").click()});
+document.querySelectorAll("input,select,textarea").forEach(el=>el.addEventListener("input",()=>{calculate();markDirty()}));
+
+$("jobDate").value=new Date().toISOString().slice(0,10);
+renderPhotos();calculate();renderSaved();
 </script>
 </body>
 </html>
