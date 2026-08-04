@@ -1,24 +1,13 @@
-SNR Gutter Pro - New Version
+SNR Gutter Pro Version 2
 
-Upload these four files to the main/root level of the same GitHub repository:
-- index.html
-- style.css
-- app.js
-- manifest.json
+Upload index.html, style.css, app.js, and manifest.json to the main/root level of your GitHub repository.
 
-Replace the old files when GitHub asks.
+New in Version 2:
+- A Elbow, B Elbow, 2-Crimp, and 4-Crimp markers accept a quantity.
+- Elbow markers display the entered quantity, such as A ×3.
+- Elbow quantities correctly update photo summaries, live totals, and billable footage.
+- Crew PDF button creates a crew work order without customer pricing, costs, or profit.
+- Crew report includes job information, material totals, crew notes, and each marked property photo.
 
-New features:
-- Multiple photos per job
-- Smaller photo markers
-- Collapsible tool panel
-- Pinch zoom and two-finger pan
-- Undo and redo per photo
-- A and B elbows
-- 2-crimp and 4-crimp elbows
-- Inside and outside miters
-- Outlets, end-cap pairs, and diverters
-- Exact $7.50 billable-foot pricing rules
-- Internal cost deductions and gross profit
-- Saved jobs
-- Print / Save PDF
+On iPhone:
+Tap Crew PDF, use the print preview, spread two fingers outward on the preview to open it as a PDF, then tap Share to text, email, save, or send it to your crew.
