@@ -1,292 +1,275 @@
-const TOOLS = [
-  { id: 'gutter', label: 'Gutter', short: 'G', needsFeet: true, billable: 1, color: '#2563eb' },
-  { id: 'downspout', label: 'Downspout', short: 'DS', needsFeet: true, billable: 1, color: '#059669' },
-  { id: 'insideMiter', label: 'Inside Miter', short: 'IM', needsFeet: false, billable: 3, color: '#dc2626' },
-  { id: 'outsideMiter', label: 'Outside Miter', short: 'OM', needsFeet: false, billable: 3, color: '#ea580c' },
-  { id: 'outlet', label: 'Outlet', short: 'O', needsFeet: false, billable: 1, color: '#4b5563' },
-  { id: 'endCapPair', label: 'End Cap Pair', short: 'EC', needsFeet: false, billable: 1, color: '#ca8a04' },
-  { id: 'aElbow', label: 'A Elbow', short: 'A', needsFeet: false, usesQuantity: true, billable: 1, color: '#7c3aed' },
-  { id: 'bElbow', label: 'B Elbow', short: 'B', needsFeet: false, usesQuantity: true, billable: 1, color: '#db2777' },
-  { id: 'twoCrimp', label: '2-Crimp', short: '2C', needsFeet: false, usesQuantity: true, billable: 1, color: '#0891b2' },
-  { id: 'fourCrimp', label: '4-Crimp', short: '4C', needsFeet: false, usesQuantity: true, billable: 1, color: '#9333ea' },
-  { id: 'diverter', label: 'Diverter', short: 'D', needsFeet: false, billable: 0, color: '#92400e' }
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const money=n=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(n)||0);
+const trim=n=>Number.isInteger(n)?String(n):Number(n).toFixed(1).replace(/\.0$/,"");
+const num=id=>parseFloat($(id).value)||0;
+
+const TOOLS=[
+  {id:"gutter",label:"Gutter",short:"G",needsFeet:true,billable:0},
+  {id:"downspout",label:"Downspout",short:"DS",needsFeet:true,billable:0},
+  {id:"inside",label:"Inside Miter",short:"IN",needsFeet:false,billable:3},
+  {id:"outside",label:"Outside Miter",short:"OUT",needsFeet:false,billable:3},
+  {id:"outlet",label:"Outlet",short:"O",needsFeet:false,billable:1},
+  {id:"endcap",label:"End Cap",short:"EC",needsFeet:false,billable:.5},
+  {id:"aElbow",label:"A Elbow",short:"A",needsFeet:false,billable:1},
+  {id:"bElbow",label:"B Elbow",short:"B",needsFeet:false,billable:1},
+  {id:"twoCrimp",label:"2-Crimp Elbow",short:"2",needsFeet:false,billable:1},
+  {id:"fourCrimp",label:"4-Crimp Elbow",short:"4",needsFeet:false,billable:1},
+  {id:"diverter",label:"Diverter",short:"D",needsFeet:false,billable:0}
 ];
 
-let state = { id: crypto.randomUUID(), photos: [], selectedTool: 'gutter', currentEntry: null };
-const $ = id => document.getElementById(id);
-const photoInput = $('photoInput');
-const photosEl = $('photos');
-$('jobDate').valueAsDate = new Date();
+let state={id:uid(),photos:[],selectedTool:"move",currentEntry:null};
 
-const toolById = id => TOOLS.find(t => t.id === id);
-const num = id => Number($(id).value || 0);
-const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n || 0);
-const trim = n => Number(n.toFixed(2)).toString();
-const markerQuantity = marker => Math.max(1, Number(marker.value || 1));
-
-$('addPhotoBtn').onclick = () => photoInput.click();
-photoInput.onchange = async e => {
-  for (const file of [...e.target.files]) {
-    state.photos.push({
-      id: crypto.randomUUID(),
-      label: `Photo ${state.photos.length + 1}`,
-      dataUrl: await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      }),
-      markers: []
+function makePhoto(file,index){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve({
+      id:uid(),label:`Photo ${index+1}`,src:reader.result,markers:[],undo:[],redo:[],
+      view:{scale:1,x:0,y:0}
     });
-  }
-  photoInput.value = '';
-  renderPhotos();
-  calculate();
-};
-
-function markerText(marker, tool) {
-  if (tool.needsFeet) return `${tool.short}<span class="mini">${marker.value}'</span>`;
-  if (tool.usesQuantity) return `${tool.short}<span class="mini">×${markerQuantity(marker)}</span>`;
-  return tool.short;
-}
-
-function renderPhotos() {
-  photosEl.innerHTML = '';
-  if (!state.photos.length) {
-    photosEl.innerHTML = '<div class="empty-state"><strong>No photos added yet</strong><span>Tap “Add Photo” to start measuring.</span></div>';
-    return;
-  }
-
-  const tpl = $('photoCardTemplate');
-  state.photos.forEach(photo => {
-    const node = tpl.content.firstElementChild.cloneNode(true);
-    const img = node.querySelector('.property-photo');
-    const layer = node.querySelector('.marker-layer');
-    const label = node.querySelector('.photo-label');
-    const toolbar = node.querySelector('.toolbar');
-    const summary = node.querySelector('.photo-summary');
-
-    label.value = photo.label;
-    img.src = photo.dataUrl;
-    label.oninput = () => { photo.label = label.value; status(); };
-
-    node.querySelector('.delete-photo').onclick = () => {
-      if (confirm('Delete this photo and its markers?')) {
-        state.photos = state.photos.filter(p => p.id !== photo.id);
-        renderPhotos();
-        calculate();
-      }
-    };
-
-    TOOLS.forEach(tool => {
-      const button = document.createElement('button');
-      button.className = 'tool' + (state.selectedTool === tool.id ? ' active' : '');
-      button.textContent = tool.label;
-      button.onclick = () => { state.selectedTool = tool.id; renderPhotos(); };
-      toolbar.appendChild(button);
-    });
-
-    layer.onclick = e => {
-      if (e.target.closest('.marker')) return;
-      const rect = layer.getBoundingClientRect();
-      beginEntry(photo.id, (e.clientX - rect.left) / rect.width * 100, (e.clientY - rect.top) / rect.height * 100);
-    };
-
-    photo.markers.forEach(marker => {
-      const tool = toolById(marker.tool);
-      const markerButton = document.createElement('button');
-      markerButton.className = 'marker';
-      markerButton.style.left = marker.x + '%';
-      markerButton.style.top = marker.y + '%';
-      markerButton.style.background = tool.color;
-      markerButton.innerHTML = markerText(marker, tool);
-      markerButton.onclick = e => {
-        e.stopPropagation();
-        beginEntry(photo.id, marker.x, marker.y, marker);
-      };
-      layer.appendChild(markerButton);
-    });
-
-    const counts = {};
-    photo.markers.forEach(marker => {
-      const tool = toolById(marker.tool);
-      counts[marker.tool] = (counts[marker.tool] || 0) + (tool.usesQuantity ? markerQuantity(marker) : 1);
-    });
-    summary.textContent = TOOLS.filter(t => counts[t.id]).map(t => `${t.label}: ${counts[t.id]}`).join(' • ') || 'No measurements on this photo.';
-    photosEl.appendChild(node);
+    reader.readAsDataURL(file);
   });
 }
 
-function beginEntry(photoId, x, y, existing = null) {
-  const tool = existing ? toolById(existing.tool) : toolById(state.selectedTool);
-  state.currentEntry = { photoId, x, y, existingId: existing?.id || null, tool: tool.id };
-  $('popoverTitle').textContent = (existing ? 'Edit ' : '') + tool.label;
+$("addPhotoBtn").onclick=()=>$("photoInput").click();
+$("photoInput").onchange=async e=>{
+  const files=[...e.target.files];
+  for(let i=0;i<files.length;i++) state.photos.push(await makePhoto(files[i],state.photos.length));
+  e.target.value="";
+  renderPhotos();calculate();dirty();
+};
 
-  const showInput = tool.needsFeet || tool.usesQuantity;
-  $('measurementLabel').classList.toggle('hidden', !showInput);
-  $('measurementText').textContent = tool.usesQuantity ? 'Quantity' : 'Feet';
-  $('measurementInput').min = tool.usesQuantity ? '1' : '0';
-  $('measurementInput').step = tool.usesQuantity ? '1' : '0.5';
-  $('measurementInput').inputMode = tool.usesQuantity ? 'numeric' : 'decimal';
-  $('measurementInput').value = existing?.value ?? (tool.usesQuantity ? 1 : '');
-
-  $('entryPopover').classList.remove('hidden');
-  if (showInput) setTimeout(() => $('measurementInput').focus(), 50);
+function snapshot(p){
+  p.undo.push(JSON.stringify(p.markers));
+  if(p.undo.length>50)p.undo.shift();
+  p.redo=[];
+}
+function undo(p){
+  if(!p.undo.length)return;
+  p.redo.push(JSON.stringify(p.markers));
+  p.markers=JSON.parse(p.undo.pop());renderPhotos();calculate();dirty();
+}
+function redo(p){
+  if(!p.redo.length)return;
+  p.undo.push(JSON.stringify(p.markers));
+  p.markers=JSON.parse(p.redo.pop());renderPhotos();calculate();dirty();
 }
 
-$('cancelEntry').onclick = () => {
-  $('entryPopover').classList.add('hidden');
-  state.currentEntry = null;
+function renderPhotos(){
+  const box=$("photos");
+  if(!state.photos.length){box.innerHTML='<div class="empty-state"><strong>No photos added yet</strong><span>Tap “Add Photos” to begin.</span></div>';return}
+  box.innerHTML="";
+  state.photos.forEach((p,idx)=>{
+    const node=$("photoCardTemplate").content.firstElementChild.cloneNode(true);
+    node.dataset.pid=p.id;
+    const label=node.querySelector(".photo-label"); label.value=p.label;
+    label.oninput=e=>{p.label=e.target.value;dirty()};
+    node.querySelector(".delete-photo").onclick=()=>{if(confirm("Delete this photo and all markers?")){state.photos=state.photos.filter(x=>x.id!==p.id);renderPhotos();calculate();dirty()}};
+    const workspace=node.querySelector(".workspace");
+    const layer=node.querySelector(".transform-layer");
+    const img=node.querySelector(".property-photo"); img.src=p.src;
+    const markerLayer=node.querySelector(".marker-layer");
+    const zoomLabel=node.querySelector(".zoom-label");
+
+    function applyView(){layer.style.transform=`translate(${p.view.x}px,${p.view.y}px) scale(${p.view.scale})`;zoomLabel.textContent=Math.round(p.view.scale*100)+"%"}
+    applyView();
+
+    node.querySelector(".zoom-in").onclick=()=>{p.view.scale=Math.min(4,p.view.scale+.25);applyView()};
+    node.querySelector(".zoom-out").onclick=()=>{p.view.scale=Math.max(1,p.view.scale-.25);if(p.view.scale===1){p.view.x=0;p.view.y=0}applyView()};
+    node.querySelector(".reset-view").onclick=()=>{p.view={scale:1,x:0,y:0};applyView()};
+    node.querySelector(".undo").onclick=()=>undo(p);
+    node.querySelector(".redo").onclick=()=>redo(p);
+    node.querySelector(".clear-markers").onclick=()=>{if(p.markers.length&&confirm("Clear all markers from this photo?")){snapshot(p);p.markers=[];renderPhotos();calculate();dirty()}};
+
+    const toolbar=node.querySelector(".toolbar");
+    const moveBtn=node.querySelector(".move-tool");
+    const allTools=[{id:"move",label:"Move / Zoom"},...TOOLS];
+    allTools.forEach(t=>{
+      const b=document.createElement("button");b.className="tool"+(state.selectedTool===t.id?" active":"");b.textContent=t.label;
+      b.onclick=()=>{state.selectedTool=t.id;renderPhotos()};
+      toolbar.appendChild(b);
+    });
+    moveBtn.onclick=()=>{state.selectedTool="move";renderPhotos()};
+    moveBtn.classList.toggle("active",state.selectedTool==="move");
+
+    p.markers.forEach(m=>{
+      const tool=TOOLS.find(t=>t.id===m.type);
+      const el=document.createElement("button");
+      el.className=`marker ${m.type}${m.type==="downspout"?" downspout-assembly":""}`;
+      el.style.left=m.x+"%";el.style.top=m.y+"%";
+      if(m.type==="downspout"){
+        const ec=(m.assembly?.a||0)+(m.assembly?.b||0)+(m.assembly?.two||0)+(m.assembly?.four||0);
+        el.textContent=`${trim(m.value)}' DS${ec?` • ${ec}E`:""}`;
+      }else{
+        el.textContent=tool.needsFeet?`${trim(m.value)}'`:tool.short+(m.qty>1?`×${m.qty}`:"");
+      }
+      el.title=tool.label;
+      el.onclick=e=>{e.stopPropagation();editMarker(p,m)};
+      markerLayer.appendChild(el);
+    });
+
+    let dragging=false,lastX=0,lastY=0;
+    workspace.onpointerdown=e=>{
+      if(state.selectedTool==="move" && p.view.scale>1){
+        dragging=true;lastX=e.clientX;lastY=e.clientY;workspace.setPointerCapture(e.pointerId);
+      }
+    };
+    workspace.onpointermove=e=>{
+      if(!dragging)return;
+      p.view.x+=e.clientX-lastX;p.view.y+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;applyView();
+    };
+    workspace.onpointerup=()=>dragging=false;
+    workspace.onclick=e=>{
+      if(e.target.closest(".marker")||state.selectedTool==="move")return;
+      const rect=workspace.getBoundingClientRect();
+      const rawX=(e.clientX-rect.left-p.view.x)/p.view.scale;
+      const rawY=(e.clientY-rect.top-p.view.y)/p.view.scale;
+      const x=Math.max(0,Math.min(100,rawX/(workspace.clientWidth)*100));
+      const naturalHeight=img.clientHeight||workspace.clientHeight;
+      const y=Math.max(0,Math.min(100,rawY/naturalHeight*100));
+      openEntry(p,x,y,state.selectedTool,null);
+    };
+
+    const totals=photoTotals(p);
+    node.querySelector(".photo-summary").textContent=`${trim(totals.gutter.feet)} ft gutter • ${trim(totals.downspout.feet)} ft downspout • ${totals.inside.count+totals.outside.count} miters • ${totals.totalMarkers} markers`;
+    box.appendChild(node);
+  });
+}
+
+function openEntry(p,x,y,type,marker){
+  const tool=TOOLS.find(t=>t.id===type);if(!tool)return;
+  state.currentEntry={pid:p.id,x,y,type,markerId:marker?.id||null};
+  $("popoverTitle").textContent=marker?`Edit ${tool.label}`:`Add ${tool.label}`;
+  $("measurementLabel").classList.toggle("hidden",!tool.needsFeet);
+  $("quantityLabel").classList.toggle("hidden",tool.needsFeet);
+  $("downspoutAssemblyFields").classList.toggle("hidden",type!=="downspout");
+  $("measurementInput").value=marker?.value??"";
+  $("quantityInput").value=marker?.qty??1;
+  $("assemblyA").value=marker?.assembly?.a??0;
+  $("assemblyB").value=marker?.assembly?.b??0;
+  $("assembly2").value=marker?.assembly?.two??0;
+  $("assembly4").value=marker?.assembly?.four??0;
+  $("assemblyOutlet").value=marker?.assembly?.outlet??1;
+  $("entryPopover").classList.remove("hidden");
+  setTimeout(()=>$(tool.needsFeet?"measurementInput":"quantityInput").focus(),50);
+}
+function editMarker(p,m){
+  const tool=TOOLS.find(t=>t.id===m.type);
+  const action=prompt(`Type E to edit or D to delete this ${tool.label}.`,"E");
+  if(action===null)return;
+  if(action.trim().toUpperCase()==="D"){
+    snapshot(p);p.markers=p.markers.filter(x=>x.id!==m.id);renderPhotos();calculate();dirty();
+  }else openEntry(p,m.x,m.y,m.type,m);
+}
+$("cancelEntry").onclick=()=>{$("entryPopover").classList.add("hidden");state.currentEntry=null};
+$("saveEntry").onclick=()=>{
+  const e=state.currentEntry;if(!e)return;
+  const p=state.photos.find(x=>x.id===e.pid);const tool=TOOLS.find(t=>t.id===e.type);if(!p||!tool)return;
+  const value=parseFloat($("measurementInput").value);
+  const qty=Math.max(1,parseInt($("quantityInput").value)||1);
+  if(tool.needsFeet&&(!Number.isFinite(value)||value<0)){alert("Enter a valid footage amount.");return}
+  snapshot(p);
+  const assembly=e.type==="downspout"?{
+    a:Math.max(0,parseInt($("assemblyA").value)||0),
+    b:Math.max(0,parseInt($("assemblyB").value)||0),
+    two:Math.max(0,parseInt($("assembly2").value)||0),
+    four:Math.max(0,parseInt($("assembly4").value)||0),
+    outlet:Math.max(0,parseInt($("assemblyOutlet").value)||0)
+  }:null;
+  if(e.markerId){
+    const m=p.markers.find(x=>x.id===e.markerId);
+    if(m){m.value=tool.needsFeet?value:1;m.qty=tool.needsFeet?1:qty;if(e.type==="downspout")m.assembly=assembly}
+  }else p.markers.push({id:uid(),type:e.type,x:e.x,y:e.y,value:tool.needsFeet?value:1,qty:tool.needsFeet?1:qty,...(assembly?{assembly}:{})});
+  $("entryPopover").classList.add("hidden");state.currentEntry=null;renderPhotos();calculate();dirty();
 };
 
-$('saveEntry').onclick = () => {
-  const entry = state.currentEntry;
-  const photo = state.photos.find(p => p.id === entry.photoId);
-  const tool = toolById(entry.tool);
-  let value = 1;
-
-  if (tool.needsFeet) value = Number($('measurementInput').value);
-  if (tool.usesQuantity) value = Math.floor(Number($('measurementInput').value));
-  if (tool.needsFeet && !value) return alert('Enter the footage.');
-  if (tool.usesQuantity && value < 1) return alert('Enter a quantity of 1 or more.');
-
-  if (entry.existingId) photo.markers.find(m => m.id === entry.existingId).value = value;
-  else photo.markers.push({ id: crypto.randomUUID(), tool: entry.tool, x: entry.x, y: entry.y, value });
-
-  $('entryPopover').classList.add('hidden');
-  state.currentEntry = null;
-  renderPhotos();
-  calculate();
-};
-
-['pricePerFoot', 'materials', 'labor', 'delivery', 'otherCosts'].forEach(id => $(id).oninput = calculate);
-
-function aggregate() {
-  const totals = Object.fromEntries(TOOLS.map(t => [t.id, { count: 0, feet: 0 }]));
-  state.photos.forEach(photo => photo.markers.forEach(marker => {
-    const tool = toolById(marker.tool);
-    if (tool.needsFeet) totals[marker.tool].feet += Number(marker.value || 0);
-    else totals[marker.tool].count += tool.usesQuantity ? markerQuantity(marker) : 1;
+function aggregate(){
+  const totals={};
+  TOOLS.forEach(t=>totals[t.id]={count:0,feet:0});
+  state.photos.forEach(p=>p.markers.forEach(m=>{
+    const q=m.qty||1;totals[m.type].count+=q;
+    if(TOOLS.find(t=>t.id===m.type)?.needsFeet)totals[m.type].feet+=Number(m.value||0);
+    if(m.type==="downspout"&&m.assembly){
+      totals.aElbow.count+=Number(m.assembly.a||0);
+      totals.bElbow.count+=Number(m.assembly.b||0);
+      totals.twoCrimp.count+=Number(m.assembly.two||0);
+      totals.fourCrimp.count+=Number(m.assembly.four||0);
+      totals.outlet.count+=Number(m.assembly.outlet||0);
+    }
   }));
   return totals;
 }
-
-function calculate() {
-  const totals = aggregate();
-  let billable = 0;
-  TOOLS.forEach(tool => {
-    billable += tool.needsFeet ? totals[tool.id].feet : totals[tool.id].count * tool.billable;
+function photoTotals(p){
+  const totals={};TOOLS.forEach(t=>totals[t.id]={count:0,feet:0});
+  p.markers.forEach(m=>{
+    const q=m.qty||1;totals[m.type].count+=q;
+    if(TOOLS.find(t=>t.id===m.type)?.needsFeet)totals[m.type].feet+=Number(m.value||0);
+    if(m.type==="downspout"&&m.assembly){
+      totals.aElbow.count+=Number(m.assembly.a||0);
+      totals.bElbow.count+=Number(m.assembly.b||0);
+      totals.twoCrimp.count+=Number(m.assembly.two||0);
+      totals.fourCrimp.count+=Number(m.assembly.four||0);
+      totals.outlet.count+=Number(m.assembly.outlet||0);
+    }
   });
-
-  const customer = billable * num('pricePerFoot');
-  const costs = num('materials') + num('labor') + num('delivery') + num('otherCosts');
-  $('billableFeet').textContent = trim(billable) + ' ft';
-  $('customerPrice').textContent = money(customer);
-  $('totalCosts').textContent = money(costs);
-  $('grossProfit').textContent = money(customer - costs);
-  $('totalsGrid').innerHTML = TOOLS.map(tool => `<div class="total-box"><span>${tool.label}</span><strong>${tool.needsFeet ? trim(totals[tool.id].feet) + ' ft' : totals[tool.id].count}</strong></div>`).join('');
-  status();
+  totals.totalMarkers=p.markers.reduce((s,m)=>s+(m.qty||1),0);return totals;
 }
-
-function buildCrewReport() {
-  const report = $('crewReport');
-  const totals = aggregate();
-  const jobName = $('jobName').value.trim() || 'Untitled Job';
-  const date = $('jobDate').value ? new Date($('jobDate').value + 'T12:00:00').toLocaleDateString() : '';
-  const address = $('address').value.trim();
-  const phone = $('phone').value.trim();
-  const notes = $('notes').value.trim();
-
-  const totalsHtml = TOOLS
-    .filter(tool => tool.needsFeet ? totals[tool.id].feet : totals[tool.id].count)
-    .map(tool => `<div class="crew-total"><span>${tool.label}</span><strong>${tool.needsFeet ? trim(totals[tool.id].feet) + ' ft' : totals[tool.id].count}</strong></div>`)
-    .join('') || '<p>No materials entered.</p>';
-
-  const photosHtml = state.photos.map(photo => {
-    const markers = photo.markers.map(marker => {
-      const tool = toolById(marker.tool);
-      return `<span class="print-marker" style="left:${marker.x}%;top:${marker.y}%;background:${tool.color}">${tool.needsFeet ? `${tool.short} ${marker.value}'` : tool.usesQuantity ? `${tool.short} ×${markerQuantity(marker)}` : tool.short}</span>`;
-    }).join('');
-    return `<section class="crew-photo-page"><h2>${escapeHtml(photo.label || 'Photo')}</h2><div class="print-photo-wrap"><img src="${photo.dataUrl}" alt="${escapeHtml(photo.label || 'Job photo')}"><div class="print-marker-layer">${markers}</div></div></section>`;
-  }).join('');
-
-  report.innerHTML = `
-    <section class="crew-cover">
-      <div class="crew-brand"><h1>SNR Contracting</h1><p>Gutter Installation Work Order</p></div>
-      <div class="crew-job-grid">
-        <div><span>Job</span><strong>${escapeHtml(jobName)}</strong></div>
-        <div><span>Date</span><strong>${escapeHtml(date)}</strong></div>
-        <div class="wide"><span>Address</span><strong>${escapeHtml(address || '—')}</strong></div>
-        <div><span>Phone</span><strong>${escapeHtml(phone || '—')}</strong></div>
-      </div>
-      <h2>Material & Measurement Totals</h2>
-      <div class="crew-totals">${totalsHtml}</div>
-      <h2>Crew Notes</h2>
-      <div class="crew-notes">${notes ? escapeHtml(notes).replace(/\n/g, '<br>') : 'No additional notes.'}</div>
-    </section>
-    ${photosHtml}
-  `;
+function calculate(){
+  const t=aggregate();
+  const gutter=t.gutter.feet,down=t.downspout.feet;
+  const elbows=t.aElbow.count+t.bElbow.count+t.twoCrimp.count+t.fourCrimp.count;
+  const outlets=t.outlet.count;
+  const endcapPairs=Math.ceil(t.endcap.count/2);
+  const miters=t.inside.count+t.outside.count;
+  const billable=gutter+down+elbows+outlets+endcapPairs+(miters*3);
+  const customer=billable*num("pricePerFoot")+num("customerExtra")-num("customerDiscount");
+  const costs=num("materials")+num("labor")+num("delivery")+num("otherCosts");
+  $("billableFeet").textContent=trim(billable)+" ft";$("customerPrice").textContent=money(customer);
+  $("totalCosts").textContent=money(costs);$("grossProfit").textContent=money(customer-costs);
+  $("totalsGrid").innerHTML=[
+    ["Gutter",trim(gutter)+" ft"],["Downspout",trim(down)+" ft"],["Miters",miters],["Outlets",outlets],
+    ["End Caps",t.endcap.count],["Elbows",elbows],["Diverters",t.diverter.count],["Billable",trim(billable)+" ft"]
+  ].map(([a,b])=>`<div class="total-box"><span>${a}</span><strong>${b}</strong></div>`).join("");
 }
+function dirty(){$("saveStatus").textContent="Unsaved changes"}
+["jobName","jobDate","address","phone","gutterStyle","downspoutStyle","notes","pricePerFoot","customerExtra","customerDiscount","materials","labor","delivery","otherCosts"].forEach(id=>{
+  $(id).addEventListener("input",()=>{calculate();dirty()});
+});
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
-}
-
-$('crewPdfBtn').onclick = () => {
-  buildCrewReport();
-  window.print();
-};
-
-function status() { $('saveStatus').textContent = 'Unsaved changes'; }
-function data() {
-  return {
-    ...state,
-    currentEntry: null,
-    job: { name: $('jobName').value, date: $('jobDate').value, address: $('address').value, phone: $('phone').value, notes: $('notes').value },
-    pricing: { pricePerFoot: num('pricePerFoot'), materials: num('materials'), labor: num('labor'), delivery: num('delivery'), otherCosts: num('otherCosts') }
-  };
-}
-
-$('saveJobBtn').onclick = () => {
-  const jobs = JSON.parse(localStorage.getItem('snrGutterJobs') || '[]');
-  const current = data();
-  const index = jobs.findIndex(job => job.id === current.id);
-  index >= 0 ? jobs[index] = current : jobs.unshift(current);
-  localStorage.setItem('snrGutterJobs', JSON.stringify(jobs));
-  $('saveStatus').textContent = 'Saved';
-  renderSavedJobs();
-};
-
-function renderSavedJobs() {
-  const jobs = JSON.parse(localStorage.getItem('snrGutterJobs') || '[]');
-  const el = $('savedJobs');
-  el.innerHTML = '';
-  if (!jobs.length) {
-    el.innerHTML = '<div class="muted">No saved jobs yet.</div>';
-    return;
+function data(){
+  return{
+    id:state.id,photos:state.photos,job:{name:$("jobName").value,date:$("jobDate").value,address:$("address").value,phone:$("phone").value,
+    gutterStyle:$("gutterStyle").value,downspoutStyle:$("downspoutStyle").value,notes:$("notes").value},
+    pricing:{pricePerFoot:num("pricePerFoot"),customerExtra:num("customerExtra"),customerDiscount:num("customerDiscount"),materials:num("materials"),labor:num("labor"),delivery:num("delivery"),otherCosts:num("otherCosts")},
+    savedAt:new Date().toISOString()
   }
-
-  jobs.forEach(job => {
-    const row = document.createElement('div');
-    row.className = 'saved-job';
-    row.innerHTML = `<div><strong>${escapeHtml(job.job?.name || 'Untitled Job')}</strong><small>${escapeHtml(job.job?.address || '')}</small></div><button class="ghost">Open</button>`;
-    row.querySelector('button').onclick = () => {
-      state = { id: job.id, photos: job.photos || [], selectedTool: 'gutter', currentEntry: null };
-      $('jobName').value = job.job?.name || '';
-      $('jobDate').value = job.job?.date || '';
-      $('address').value = job.job?.address || '';
-      $('phone').value = job.job?.phone || '';
-      $('notes').value = job.job?.notes || '';
-      for (const key of ['pricePerFoot', 'materials', 'labor', 'delivery', 'otherCosts']) $('' + key).value = job.pricing?.[key] ?? (key === 'pricePerFoot' ? 7.5 : 0);
-      renderPhotos();
-      calculate();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    el.appendChild(row);
+}
+function jobs(){return JSON.parse(localStorage.getItem("snrGutterJobsV2")||"[]")}
+function setJobs(v){localStorage.setItem("snrGutterJobsV2",JSON.stringify(v))}
+$("saveJobBtn").onclick=()=>{
+  const list=jobs(),d=data(),i=list.findIndex(j=>j.id===d.id);if(i>=0)list[i]=d;else list.unshift(d);setJobs(list);$("saveStatus").textContent="Saved";renderSavedJobs();toast("Job saved");
+};
+function renderSavedJobs(){
+  const box=$("savedJobs"),list=jobs();if(!list.length){box.innerHTML='<div class="muted">No saved jobs yet.</div>';return}
+  box.innerHTML="";
+  list.forEach(j=>{
+    const row=document.createElement("div");row.className="saved-job";
+    row.innerHTML=`<div><strong>${escapeHtml(j.job?.name||"Untitled Job")}</strong><small>${escapeHtml(j.job?.address||"")}</small></div><div><button class="ghost open">Open</button> <button class="danger del">Delete</button></div>`;
+    row.querySelector(".open").onclick=()=>loadJob(j);row.querySelector(".del").onclick=()=>{if(confirm("Delete this saved job?")){setJobs(jobs().filter(x=>x.id!==j.id));renderSavedJobs()}};
+    box.appendChild(row);
   });
 }
+function loadJob(j){
+  state={id:j.id,photos:j.photos||[],selectedTool:"move",currentEntry:null};
+  $("jobName").value=j.job?.name||"";$("jobDate").value=j.job?.date||"";$("address").value=j.job?.address||"";$("phone").value=j.job?.phone||"";
+  $("gutterStyle").value=j.job?.gutterStyle||"K-Style";$("downspoutStyle").value=j.job?.downspoutStyle||"Rectangular";$("notes").value=j.job?.notes||"";
+  ["pricePerFoot","customerExtra","customerDiscount","materials","labor","delivery","otherCosts"].forEach(k=>$(k).value=j.pricing?.[k]??(k==="pricePerFoot"?7.5:0));
+  renderPhotos();calculate();$("saveStatus").textContent="Saved";window.scrollTo({top:0,behavior:"smooth"});
+}
+$("newJobBtn").onclick=()=>{if(confirm("Start a new blank job? Unsaved work will be lost.")){localStorage.setItem("snrGutterDraft","");location.reload()}};
+$("printBtn").onclick=()=>window.print();
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("hidden");setTimeout(()=>t.classList.add("hidden"),1700)}
 
-$('newJobBtn').onclick = () => { if (confirm('Start a new blank job?')) location.reload(); };
-renderPhotos();
-renderSavedJobs();
-calculate();
+$("jobDate").valueAsDate=new Date();
+renderPhotos();renderSavedJobs();calculate();
