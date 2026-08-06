@@ -1,35 +1,17 @@
-SNR Gutter Pro Version 2.1
+SNR Gutter Pro V6
 
-UPLOAD THESE FOUR FILES TO THE ROOT OF YOUR GITHUB REPOSITORY:
-- index.html
-- style.css
-- app.js
-- manifest.json
+UPLOAD INSTRUCTIONS
+1. Unzip this folder.
+2. Upload index.html, manifest.json, and README.txt to the main/root level of your GitHub repository.
+3. Replace the older files when prompted.
+4. Wait a minute, then refresh your GitHub Pages app.
 
-Do not upload only the ZIP file or the outer folder.
-
-VERSION 2 FEATURES
-- Multiple property photos
-- Smaller measurement markers
-- Zoom in, zoom out, reset, and drag/pan
-- Undo and redo for each photo
-- Clear-all markers button
-- Quantity entry for elbows, outlets, end caps, miters, and diverters
-- A elbows, B elbows, 2-crimp elbows, and 4-crimp elbows
-- K-style and half-round gutter choices
-- Rectangular and round downspout choices
-- Exact SNR billable-foot pricing formula
-- Additional customer charge and customer discount
-- Internal materials, labor, delivery, and other cost deductions
-- Gross profit calculation
-- Saved jobs on the device
-- Print / Save PDF for crew and customer records
+V6 FEATURES
+- Automatic photo compression to reduce saved-job storage use.
+- Manual gutter-cover selection: Roll Lock, EZ Flow, or Leaf Free.
+- Manual gutter-cover price per foot for each job.
+- Automatic cover footage based on gutter footage plus one foot per miter.
+- Existing photo measurements, material totals, pricing, saved jobs, and crew PDF features.
 
 IMPORTANT
-Saved jobs remain in the browser/device used to create them. Replacing the GitHub files updates the app but does not automatically move saved jobs to another phone or browser.
-
-NEW IN VERSION 2.1
-- One combined marker for each downspout assembly
-- Tapping a downspout opens footage plus A, B, 2-crimp, and 4-crimp elbow quantities
-- Outlet quantity is included in the same downspout window
-- Elbows and outlets count in pricing and totals without cluttering the photo
+The app is contained inside index.html, so separate style.css and app.js files are not required for this version.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#111827">
-<title>SNR Gutter Pro V4</title>
+<title>SNR Gutter Pro V6</title>
 <style>
 :root{--navy:#111827;--gold:#f5b700;--light:#f3f4f6;--card:#fff;--red:#dc2626;--green:#15803d;--blue:#2563eb;--purple:#7e22ce;--orange:#ea580c;--teal:#0f766e;--muted:#6b7280;--border:#d1d5db}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--light);color:#111827}
@@ -44,7 +44,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 </style>
 </head>
 <body>
-<header><div class="brand"><div><h1>SNR Gutter Pro V4</h1><small>Tap • Measure • Total • Crew PDF</small></div><span class="badge" id="saveStatus">Not saved</span></div></header>
+<header><div class="brand"><div><h1>SNR Gutter Pro V6</h1><small>Tap • Measure • Total • Crew PDF</small></div><span class="badge" id="saveStatus">Not saved</span></div></header>
 <main>
 <section class="card">
 <h2>Job Information</h2>
@@ -87,7 +87,19 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 <div>2-crimp elbows</div><strong id="countTwo">0</strong>
 <div>4-crimp elbows</div><strong id="countFour">0</strong>
 <div>Diverters</div><strong id="countDiverters">0</strong>
+<div id="gutterCoverLabel">Gutter cover</div><strong id="countGutterCover">None</strong>
 </div>
+</section>
+
+<section class="card gutter-cover-card">
+<h2>Gutter Covers</h2>
+<p class="help">Enter gutter covers manually here. They are not added by tapping the property photos.</p>
+<div class="grid">
+<div><label>Gutter Cover Type</label><select id="gutterCoverType"><option value="">None</option><option>Roll Lock</option><option>EZ Flow</option><option>Leaf Free</option></select></div>
+<div><label>Automatic Cover Footage</label><input id="gutterCoverFeet" type="number" inputmode="decimal" min="0" step=".1" value="0" readonly><small class="help">Uses gutter footage + 1 extra foot for each miter.</small></div>
+<div class="internal-only"><label>Gutter Cover Price per Foot</label><input id="gutterCoverRate" type="number" inputmode="decimal" min="0" step=".01" value="0"></div>
+</div>
+<div class="result-row internal-only"><span>Gutter cover customer charge</span><strong id="gutterCoverChargeOut">$0.00</strong></div>
 </section>
 
 <section class="card pricing-card">
@@ -160,7 +172,24 @@ let photos=[],editingId=null,currentTool="gutter",pendingTap=null;
 const tools=[["gutter","Gutter"],["downspout","Downspout"],["diverter","Diverter"]];
 
 function stepQty(id,d){const el=$(id);el.value=Math.max(0,(parseInt(el.value)||0)+d)}
-function addPhoto(file){const r=new FileReader();r.onload=e=>{photos.push({id:uid(),src:e.target.result,label:"Photo "+(photos.length+1),markers:[]});renderPhotos();calculate();markDirty()};r.readAsDataURL(file)}
+function addPhoto(file){
+ const r=new FileReader();
+ r.onload=e=>{
+  const img=new Image();
+  img.onload=()=>{
+   const maxDim=1800,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+   const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+   const c=document.createElement("canvas");c.width=w;c.height=h;
+   c.getContext("2d").drawImage(img,0,0,w,h);
+   const src=c.toDataURL("image/jpeg",0.78);
+   photos.push({id:uid(),src,label:"Photo "+(photos.length+1),markers:[]});
+   renderPhotos();calculate();markDirty()
+  };
+  img.onerror=()=>alert("This photo could not be processed.");
+  img.src=e.target.result
+ };
+ r.readAsDataURL(file)
+}
 function renderPhotos(){
  const box=$("photos"); if(!photos.length){box.innerHTML='<div class="empty">No photos added yet.</div>';return}
  box.innerHTML=photos.map(p=>`<div class="photo-card">
@@ -199,18 +228,21 @@ function totals(){
 function calculate(){
  const t=totals();$("gutterStyleLabel").textContent=$("gutterStyle").value+" gutter";$("downspoutStyleLabel").textContent=$("downspoutStyle").value+" downspout";
  [["countGutter",fmt(t.gutter)+" ft"],["countDownspout",fmt(t.downspout)+" ft"],["countInside",t.inside],["countOutside",t.outside],["countMiters",t.miters],["countOutlets",t.outlets],["countEndcapPairs",t.endcapPairs],["countA",t.a],["countB",t.b],["countTwo",t.two],["countFour",t.four],["countDiverters",t.diverters]].forEach(([id,v])=>$(id).textContent=v);
- const rate=+$("rate").value||0,extra=+$("customerExtra").value||0,discount=+$("customerDiscount").value||0,total=Math.max(0,t.billable*rate+extra-discount);
+ const coverType=$("gutterCoverType").value,coverFeet=coverType?t.gutter+t.miters:0,coverRate=+$("gutterCoverRate").value||0,coverCharge=coverType?coverFeet*coverRate:0;
+ $("gutterCoverFeet").value=fmt(coverFeet);
+ $("gutterCoverLabel").textContent=coverType?coverType+" gutter cover":"Gutter cover";$("countGutterCover").textContent=coverType?fmt(coverFeet)+" ft":"None";$("gutterCoverChargeOut").textContent=money(coverCharge);
+ const rate=+$("rate").value||0,extra=+$("customerExtra").value||0,discount=+$("customerDiscount").value||0,total=Math.max(0,t.billable*rate+coverCharge+extra-discount);
  const costs=["materialsCost","laborCost","deliveryCost","otherCost"].reduce((s,id)=>s+(+$(id).value||0),0);
  $("billableOut").textContent=fmt(t.billable)+" ft";$("customerTotalOut").textContent=money(total);$("costsOut").textContent=money(costs);$("profitOut").textContent=money(total-costs);
- return {...t,total,costs,profit:total-costs}
+ return {...t,coverType,coverFeet,coverRate,coverCharge,total,costs,profit:total-costs}
 }
-function collect(){return {id:editingId||uid(),savedAt:new Date().toISOString(),jobName:$("jobName").value,address:$("address").value,phone:$("phone").value,jobDate:$("jobDate").value,notes:$("notes").value,gutterStyle:$("gutterStyle").value,downspoutStyle:$("downspoutStyle").value,photos,rate:$("rate").value,customerExtra:$("customerExtra").value,customerDiscount:$("customerDiscount").value,materialsCost:$("materialsCost").value,laborCost:$("laborCost").value,deliveryCost:$("deliveryCost").value,otherCost:$("otherCost").value,results:calculate()}}
-function jobs(){try{return JSON.parse(localStorage.getItem("snrGutterJobsV4")||"[]")}catch{return[]}}
-function saveJob(){if(!$("jobName").value.trim()&&!$("address").value.trim()){alert("Enter a job name or address first.");return}const d=collect(),list=jobs(),i=list.findIndex(j=>j.id===d.id);if(i>=0)list[i]=d;else list.unshift(d);try{localStorage.setItem("snrGutterJobsV4",JSON.stringify(list.slice(0,20)));editingId=d.id;$("saveStatus").textContent="Saved";renderSaved();alert("Job saved on this device.")}catch{alert("The photos may be too large for browser storage.")}}
+function collect(){return {id:editingId||uid(),savedAt:new Date().toISOString(),jobName:$("jobName").value,address:$("address").value,phone:$("phone").value,jobDate:$("jobDate").value,notes:$("notes").value,gutterStyle:$("gutterStyle").value,downspoutStyle:$("downspoutStyle").value,gutterCoverType:$("gutterCoverType").value,gutterCoverFeet:$("gutterCoverFeet").value,gutterCoverRate:$("gutterCoverRate").value,photos,rate:$("rate").value,customerExtra:$("customerExtra").value,customerDiscount:$("customerDiscount").value,materialsCost:$("materialsCost").value,laborCost:$("laborCost").value,deliveryCost:$("deliveryCost").value,otherCost:$("otherCost").value,results:calculate()}}
+function jobs(){try{return JSON.parse(localStorage.getItem("snrGutterJobsV6")||localStorage.getItem("snrGutterJobsV5")||localStorage.getItem("snrGutterJobsV4")||"[]")}catch{return[]}}
+function saveJob(){if(!$("jobName").value.trim()&&!$("address").value.trim()){alert("Enter a job name or address first.");return}const d=collect(),list=jobs(),i=list.findIndex(j=>j.id===d.id);if(i>=0)list[i]=d;else list.unshift(d);try{localStorage.setItem("snrGutterJobsV6",JSON.stringify(list.slice(0,20)));editingId=d.id;$("saveStatus").textContent="Saved";renderSaved();alert("Job saved on this device.")}catch{alert("The photos may be too large for browser storage.")}}
 function renderSaved(){const list=jobs(),box=$("savedJobs");if(!list.length){box.innerHTML='<div class="empty">No saved jobs yet.</div>';return}box.innerHTML=list.map(j=>`<div class="saved-job"><strong>${esc(j.jobName||"Unnamed Job")}</strong><small>${esc(j.address||"")} · ${new Date(j.savedAt).toLocaleString()}</small><div class="button-row no-print" style="margin-top:9px"><button class="secondary" onclick="openJob('${j.id}')">Open</button><button class="danger" onclick="deleteJob('${j.id}')">Delete</button></div></div>`).join("")}
-function openJob(id){const j=jobs().find(x=>x.id===id);if(!j)return;editingId=j.id;["jobName","address","phone","jobDate","notes","gutterStyle","downspoutStyle","rate","customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=j[k]??"");photos=j.photos||[];renumber();renderPhotos();calculate();$("saveStatus").textContent="Saved";scrollTo({top:0,behavior:"smooth"})}
-function deleteJob(id){if(confirm("Delete this saved job?")){localStorage.setItem("snrGutterJobsV4",JSON.stringify(jobs().filter(j=>j.id!==id)));renderSaved()}}
-function newJob(){if(!confirm("Start a new job? Unsaved information will be cleared."))return;editingId=null;photos=[];["jobName","address","phone","notes"].forEach(k=>$(k).value="");$("jobDate").value=new Date().toISOString().slice(0,10);$("gutterStyle").selectedIndex=0;$("downspoutStyle").selectedIndex=0;$("rate").value="7.50";["customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=0);renderPhotos();calculate();markDirty();scrollTo({top:0,behavior:"smooth"})}
+function openJob(id){const j=jobs().find(x=>x.id===id);if(!j)return;editingId=j.id;["jobName","address","phone","jobDate","notes","gutterStyle","downspoutStyle","gutterCoverType","gutterCoverRate","rate","customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=j[k]??"");photos=j.photos||[];renumber();renderPhotos();calculate();$("saveStatus").textContent="Saved";scrollTo({top:0,behavior:"smooth"})}
+function deleteJob(id){if(confirm("Delete this saved job?")){localStorage.setItem("snrGutterJobsV6",JSON.stringify(jobs().filter(j=>j.id!==id)));renderSaved()}}
+function newJob(){if(!confirm("Start a new job? Unsaved information will be cleared."))return;editingId=null;photos=[];["jobName","address","phone","notes"].forEach(k=>$(k).value="");$("jobDate").value=new Date().toISOString().slice(0,10);$("gutterStyle").selectedIndex=0;$("downspoutStyle").selectedIndex=0;$("gutterCoverType").selectedIndex=0;$("gutterCoverRate").value=0;$("rate").value="7.50";["customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=0);renderPhotos();calculate();markDirty();scrollTo({top:0,behavior:"smooth"})}
 function markDirty(){$("saveStatus").textContent="Not saved"}
 $("addPhotoBtn").onclick=()=>$("photoInput").click();$("photoInput").onchange=e=>{[...e.target.files].forEach(addPhoto);e.target.value=""};
 $("cancelModal").onclick=()=>{pendingTap=null;$("entryModal").classList.add("hidden")};

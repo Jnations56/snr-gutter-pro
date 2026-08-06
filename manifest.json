@@ -1,9 +1,8 @@
 {
-  "name": "SNR Gutter Pro Version 2.1",
-  "short_name": "Gutter Pro V2.1",
-  "start_url": "./",
+  "name": "SNR Gutter Pro V6",
+  "short_name": "Gutter Pro",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f3f4f6",
-  "theme_color": "#111827",
-  "description": "Photo-based gutter measuring, estimating, and profit calculator for SNR Contracting."
+  "theme_color": "#111827"
 }
