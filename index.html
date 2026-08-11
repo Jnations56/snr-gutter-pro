@@ -67,7 +67,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 
 <section class="card">
 <h2>Property Photos & Measurements</h2>
-<p class="help">Tap Gutter to enter length, miters, outlets and end-cap pairs together. Tap Downspout to enter length and all elbow quantities together.</p>
+<p class="help">Tap Gutter to enter length, miters, outlets and endcaps together. Tap Downspout to enter length and all elbow quantities together.</p>
 <div class="button-row no-print"><button class="primary" id="addPhotoBtn">📷 Add Property Photo</button><input id="photoInput" class="hidden" type="file" accept="image/*" capture="environment" multiple></div>
 <div id="photos"></div>
 </section>
@@ -81,7 +81,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 <div>Outside miters</div><strong id="countOutside">0</strong>
 <div>Total miters</div><strong id="countMiters">0</strong>
 <div>Outlets</div><strong id="countOutlets">0</strong>
-<div>Pairs of end caps</div><strong id="countEndcapPairs">0</strong>
+<div>Endcaps</div><strong id="countEndcapPairs">0</strong>
 <div>A elbows</div><strong id="countA">0</strong>
 <div>B elbows</div><strong id="countB">0</strong>
 <div>2-crimp elbows</div><strong id="countTwo">0</strong>
@@ -116,7 +116,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 </section>
 
 <section class="card internal-only">
-<h2>Internal SNR Costs</h2>
+<h2>Internal Costs</h2>
 <div class="grid">
 <div><label>Materials</label><input id="materialsCost" type="number" min="0" step=".01" value="0"></div>
 <div><label>Labor</label><input id="laborCost" type="number" min="0" step=".01" value="0"></div>
@@ -151,7 +151,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 <div class="qty-row"><strong>Inside miters</strong><button type="button" onclick="stepQty('insideQty',-1)">−</button><input id="insideQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('insideQty',1)">+</button></div>
 <div class="qty-row"><strong>Outside miters</strong><button type="button" onclick="stepQty('outsideQty',-1)">−</button><input id="outsideQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('outsideQty',1)">+</button></div>
 <div class="qty-row"><strong>Outlets</strong><button type="button" onclick="stepQty('outletQty',-1)">−</button><input id="outletQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('outletQty',1)">+</button></div>
-<div class="qty-row"><strong>End-cap pairs</strong><button type="button" onclick="stepQty('endcapPairQty',-1)">−</button><input id="endcapPairQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('endcapPairQty',1)">+</button></div>
+<div class="qty-row"><strong>Endcaps</strong><button type="button" onclick="stepQty('endcapPairQty',-1)">−</button><input id="endcapPairQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('endcapPairQty',1)">+</button></div>
 </div>
 <div id="downspoutFields" class="hidden">
 <div class="qty-row"><strong>A elbows</strong><button type="button" onclick="stepQty('aQty',-1)">−</button><input id="aQty" type="number" min="0" value="0"><button type="button" onclick="stepQty('aQty',1)">+</button></div>
