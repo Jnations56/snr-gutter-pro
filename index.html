@@ -17,7 +17,7 @@ input,select,textarea,button{font:inherit} input,select,textarea{width:100%;padd
 textarea{min-height:72px;resize:vertical} button,.file-btn{border:0;border-radius:11px;padding:12px 14px;font-weight:800;cursor:pointer}.file-btn{display:flex;align-items:center;justify-content:center;text-align:center}
 .primary{background:var(--gold);color:#111827}.dark{background:var(--navy);color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}
 .button-row{display:flex;gap:8px;flex-wrap:wrap}.button-row button,.button-row .file-btn{flex:1;min-width:125px}.help{font-size:12px;color:var(--muted);line-height:1.45}
-.badge{padding:4px 8px;border-radius:999px;background:#e5e7eb;color:#111827;font-size:12px;font-weight:850}.hidden{display:none!important}
+.badge{padding:4px 8px;border-radius:999px;background:#e5e7eb;color:#111827;font-size:12px;font-weight:850}.hidden{display:none!important}.file-input-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;opacity:.01!important}
 .empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
 .photo-card{border:1px solid #e5e7eb;border-radius:14px;padding:10px;margin-top:12px}.tool-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 1px 10px}
 .tool{flex:0 0 auto;padding:10px 11px;font-size:12px;background:#e5e7eb}.tool.active{outline:3px solid var(--gold);background:#fff}
@@ -68,7 +68,7 @@ textarea{min-height:72px;resize:vertical} button,.file-btn{border:0;border-radiu
 <section class="card">
 <h2>Property Photos & Measurements</h2>
 <p class="help">Tap Gutter to enter length, miters, outlets and endcaps together. Tap Downspout to enter length and all elbow quantities together.</p>
-<div class="button-row no-print"><label class="primary file-btn" for="cameraInput">📷 Take Photo</label><label class="secondary file-btn" for="photoInput">🖼️ Choose From Camera Roll</label><input id="cameraInput" class="hidden" type="file" accept="image/*" capture="environment"><input id="photoInput" class="hidden" type="file" accept="image/*" multiple></div>
+<div class="button-row no-print"><label class="primary file-btn">📷 Take Photo<input id="cameraInput" class="file-input-visually-hidden" type="file" accept="image/*" capture="environment"></label><label class="secondary file-btn">🖼️ Choose From Camera Roll<input id="photoInput" class="file-input-visually-hidden" type="file" accept="image/*" multiple></label></div><p class="help">Version 7.4 • iPhone Home Screen photo picker fix</p>
 <div id="photos"></div>
 </section>
 
