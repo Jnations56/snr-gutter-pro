@@ -68,7 +68,7 @@ textarea{min-height:72px;resize:vertical} button{border:0;border-radius:11px;pad
 <section class="card">
 <h2>Property Photos & Measurements</h2>
 <p class="help">Tap Gutter to enter length, miters, outlets and endcaps together. Tap Downspout to enter length and all elbow quantities together.</p>
-<div class="button-row no-print"><button class="primary" id="addPhotoBtn">📷 Add Property Photo</button><input id="photoInput" class="hidden" type="file" accept="image/*" capture="environment" multiple></div>
+<div class="button-row no-print"><button class="primary" id="takePhotoBtn">📷 Take Photo</button><button id="cameraRollBtn">🖼️ Choose From Camera Roll</button><input id="cameraInput" class="hidden" type="file" accept="image/*" capture="environment"><input id="photoInput" class="hidden" type="file" accept="image/*" multiple></div>
 <div id="photos"></div>
 </section>
 
@@ -253,7 +253,7 @@ function openJob(id){const j=jobs().find(x=>x.id===id);if(!j)return;editingId=j.
 function deleteJob(id){if(confirm("Delete this saved job?")){localStorage.setItem("gutterToolJobsV7",JSON.stringify(jobs().filter(j=>j.id!==id)));renderSaved()}}
 function newJob(){if(!confirm("Start a new job? Unsaved information will be cleared."))return;editingId=null;photos=[];["jobName","address","phone","notes"].forEach(k=>$(k).value="");$("jobDate").value=new Date().toISOString().slice(0,10);$("gutterStyle").selectedIndex=0;$("downspoutStyle").selectedIndex=0;$("gutterCoverType").selectedIndex=0;$("gutterCoverRate").value=0;$("rate").value="7.50";["customerExtra","customerDiscount","materialsCost","laborCost","deliveryCost","otherCost"].forEach(k=>$(k).value=0);renderPhotos();calculate();markDirty();scrollTo({top:0,behavior:"smooth"})}
 function markDirty(){$("saveStatus").textContent="Not saved"}
-$("addPhotoBtn").onclick=()=>$("photoInput").click();$("photoInput").onchange=e=>{[...e.target.files].forEach(addPhoto);e.target.value=""};
+$("takePhotoBtn").onclick=()=>$("cameraInput").click();$("cameraRollBtn").onclick=()=>$("photoInput").click();$("cameraInput").onchange=e=>{[...e.target.files].forEach(addPhoto);e.target.value=""};$("photoInput").onchange=e=>{[...e.target.files].forEach(addPhoto);e.target.value=""};
 $("cancelModal").onclick=()=>{pendingTap=null;$("entryModal").classList.add("hidden")};
 $("saveModal").onclick=()=>{const v=parseFloat($("modalValue").value);if(!Number.isFinite(v)||v<0){alert("Enter a valid length.");return}const type=pendingTap.type;commitMarker(type==="gutter"?{value:v,inside:+$("insideQty").value||0,outside:+$("outsideQty").value||0,outlets:+$("outletQty").value||0,endcapPairs:+$("endcapPairQty").value||0}:{value:v,a:+$("aQty").value||0,b:+$("bQty").value||0,two:+$("twoQty").value||0,four:+$("fourQty").value||0})};
 $("saveBtn").onclick=saveJob;$("newBtn").onclick=newJob;
